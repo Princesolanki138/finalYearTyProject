@@ -1,9 +1,10 @@
-import { hashPassword } from "../helpers/authHelper"
-import userModel from "../models/userModel"
+import { hashPassword } from "../helpers/authHelper.js"
+import userModel from "../models/userModel.js"
 
 export const registerController = async (req, res) => {
   try {
-    const { name, email, password, phone, address, answer } = req.body
+    console.log(req.body)
+    const { name, email, password, phone } = req.body
     //validation 
     if (!name) {
       return res.send({ message: 'Name is Required' })
@@ -29,8 +30,7 @@ export const registerController = async (req, res) => {
     //register user
     const hashedPassd = await hashPassword(password)
     // save 
-    const user = await new userModel({ name, email, phone, address, password: hashedPassd, answer }).save()
-
+    const user = await new userModel({ name, email, phone, password: hashedPassd }).save()
     res.status(201).send({
       success: true,
       message: 'User Register Successfully',
@@ -46,3 +46,15 @@ export const registerController = async (req, res) => {
     })
   }
 }
+
+export const testController = async (req, res) => {
+  console.log("protecter")
+  try {
+    res.send({
+      message: "Protected routes",
+    });
+  } catch (error) {
+    console.log(error);
+    res.send({ error });
+  }
+};
