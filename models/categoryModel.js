@@ -7,4 +7,6 @@ const categorySchema = new mongoose.Schema({
   }
 })
 
-export default userProfileModel = mongoose.model("category", categorySchema)
+const category = mongoose.model("category", categorySchema)
+
+export default category

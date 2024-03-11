@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 
+
 const productSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -27,7 +28,7 @@ const productSchema = new mongoose.Schema({
   },
   category: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Category",
+    ref: 'category',
     required: true,
   },
   gender: {
@@ -56,4 +57,6 @@ const productSchema = new mongoose.Schema({
   },
 })
 
-export default userProfileModel = mongoose.model("products", productSchema)
+const product = mongoose.model("products", productSchema)
+
+export default product
