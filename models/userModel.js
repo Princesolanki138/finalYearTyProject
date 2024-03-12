@@ -17,5 +17,34 @@ const userSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
+  address: {
+    type: String,
+  },
+  pincode: {
+    type: Number,
+  },
+  city: {
+    type: String,
+  },
+  state: {
+    type: String,
+  },
+  country: {
+    type: String,
+    default: "India"
+  },
+  cart: {
+    type: Array,
+    default: [],
+
+  },
+  wishlist: {
+    type: Array,
+    default: [],
+  },
+  orders: {
+    type: Array,
+    default: [],
+  },
 }, { timestamps: true })
 export default mongoose.model("Users", userSchema);

@@ -1,8 +1,11 @@
 import mongoose from "mongoose";
 
-
 const productSchema = new mongoose.Schema({
   name: {
+    type: String,
+    required: true,
+  },
+  slug: {
     type: String,
     required: true,
   },
@@ -11,11 +14,11 @@ const productSchema = new mongoose.Schema({
     required: true,
   },
   mrp: {
-    type: String,
+    type: Number,
     required: true,
   },
   price: {
-    type: String,
+    type: Number,
     required: true,
   },
   modelno: {
@@ -23,8 +26,8 @@ const productSchema = new mongoose.Schema({
     required: true,
   },
   images: {
-    type: String,
-    required: true,
+    data: Buffer,
+    contentType: Array
   },
   category: {
     type: mongoose.Schema.Types.ObjectId,
@@ -48,11 +51,11 @@ const productSchema = new mongoose.Schema({
     required: true,
   },
   dialcolor: {
-    type: String,
+    type: Array,
     required: true,
   },
   strapColor: {
-    type: String,
+    type: Array,
     required: true,
   },
 })
