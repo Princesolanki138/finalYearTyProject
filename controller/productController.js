@@ -2,7 +2,6 @@ import productModel from "../models/productModel.js";
 
 import slugify from "slugify";
 import fs from "fs";
-import formidable from "express-formidable";
 
 // create products
 export const createProductController = async (req, res) => {
