@@ -20,7 +20,7 @@ router.get("/user-auth", requireSignIn, (req, res) => {
 });
 
 //update user profile
-router.put("/update-user/", requireSignIn, updateProfile);
+router.put("/update-user", requireSignIn, updateProfile);
 
 //get user profile
 router.get("/profile", requireSignIn, getUserController);

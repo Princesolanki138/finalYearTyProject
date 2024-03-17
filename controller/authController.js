@@ -7,10 +7,10 @@ import Address from "../models/addressModel.js"
 //register controller
 export const registerController = async (req, res) => {
   try {
-    const { name, email, password, phone, addressData } = req.body;
+    const { name, email, password, phone } = req.body;
 
     // Validation 
-    if (!name || !email || !password || !phone || !addressData) {
+    if (!name || !email || !password || !phone) {
       return res.status(400).send({ message: 'All fields are required' });
     }
 
@@ -21,7 +21,7 @@ export const registerController = async (req, res) => {
     }
 
     // Create new address
-    const newAddress = await Address.create(addressData);
+    // const newAddress = await Address.create(addressData);
 
     // Hash the password
     const hashedPassword = await hashPassword(password);
@@ -32,7 +32,7 @@ export const registerController = async (req, res) => {
       email,
       password: hashedPassword,
       phone,
-      address: [newAddress._id], // Save address ID in user's address array
+      // Save address ID in user's address array
     });
 
     res.status(201).send({
