@@ -9,10 +9,7 @@ const categorySchema = new mongoose.Schema({
     type: String,
 
   },
-  slug: {
-    type: String,
 
-  }
 })
 
 
