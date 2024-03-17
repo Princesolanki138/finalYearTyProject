@@ -31,6 +31,7 @@ const userSchema = new mongoose.Schema({
   },
   cart: {
     type: [mongoose.Schema.Types.ObjectId], // Adjust the type based on the structure of cart items
+    ref: 'Product', // Reference to the Product model
     default: []
   },
   wishlist: {

@@ -152,8 +152,8 @@ export const updateProfile = async (req, res) => {
     // Hash password if provided
     const hashedPassword = password ? await hashPassword(password) : undefined;
 
-    // Update user profile
-    const updatedUser = await user.findByIdAndUpdate(req.user._id, {
+    // Update user profile using the User model
+    const updatedUser = await User.findByIdAndUpdate(req.user._id, {
       name: name || user.name,
       email: email || user.email,
       password: hashedPassword || user.password,
@@ -171,3 +171,18 @@ export const updateProfile = async (req, res) => {
     res.status(500).send({ success: false, message: 'Server Error' });
   }
 };
+
+// get user detail
+export const getUserController = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).populate('address');
+    res.status(200).send({
+      success: true,
+      message: 'User fetched successfully',
+      user,
+    });
+  } catch (error) {
+    console.error('Error in getUserController:', error);
+    res.status(500).send({ success: false, message: 'Server Error' });
+  }
+}

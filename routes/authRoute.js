@@ -1,5 +1,5 @@
 import express from "express";
-import { loginController, registerController, testController, updateProfile }
+import { getUserController, loginController, registerController, testController, updateProfile }
   from "../controller/authController.js";
 import requireSignIn from "../middleware/authMiddleware.js"
 
@@ -20,6 +20,9 @@ router.get("/user-auth", requireSignIn, (req, res) => {
 });
 
 //update user profile
-router.put("/update-user", requireSignIn, updateProfile);
+router.put("/update-user/", requireSignIn, updateProfile);
+
+//get user profile
+router.get("/profile", requireSignIn, getUserController);
 
 export default router;
