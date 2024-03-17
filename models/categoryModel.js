@@ -8,8 +8,13 @@ const categorySchema = new mongoose.Schema({
   slug: {
     type: String,
 
+  },
+  slug: {
+    type: String,
+
   }
 })
+
 
 const category = mongoose.model("category", categorySchema)
 
