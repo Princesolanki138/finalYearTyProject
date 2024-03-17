@@ -7,10 +7,10 @@ import Address from "../models/addressModel.js"
 //register controller
 export const registerController = async (req, res) => {
   try {
-    const { name, email, password, phone, addressData } = req.body;
+    const { name, email, password, phone } = req.body;
 
     // Validation 
-    if (!name || !email || !password || !phone || !addressData) {
+    if (!name || !email || !password || !phone) {
       return res.status(400).send({ message: 'All fields are required' });
     }
 
@@ -21,7 +21,7 @@ export const registerController = async (req, res) => {
     }
 
     // Create new address
-    const newAddress = await Address.create(addressData);
+    // const newAddress = await Address.create(addressData);
 
     // Hash the password
     const hashedPassword = await hashPassword(password);
@@ -32,7 +32,7 @@ export const registerController = async (req, res) => {
       email,
       password: hashedPassword,
       phone,
-      address: [newAddress._id], // Save address ID in user's address array
+      // Save address ID in user's address array
     });
 
     res.status(201).send({
@@ -78,7 +78,7 @@ export const loginController = async (req, res) => {
     const token = await JWT.sign({ _id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "7d",
     });
-     console.log(token)
+    console.log(token)
 
     res.status(200).send({
       success: true,
@@ -171,3 +171,18 @@ export const updateProfile = async (req, res) => {
     res.status(500).send({ success: false, message: 'Server Error' });
   }
 };
+
+// get user detail
+export const getUserController = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).populate('address');
+    res.status(200).send({
+      success: true,
+      message: 'User fetched successfully',
+      user,
+    });
+  } catch (error) {
+    console.error('Error in getUserController:', error);
+    res.status(500).send({ success: false, message: 'Server Error' });
+  }
+}
