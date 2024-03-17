@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import Address from "./addressModel.js";
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -7,44 +8,41 @@ const userSchema = new mongoose.Schema({
   },
   email: {
     type: String,
-    required: true
+    required: true,
+    unique: true, // Ensure email uniqueness
+    lowercase: true, // Normalize email to lowercase
+    // Add email format validation if necessary
   },
   password: {
     type: String,
     required: true
   },
   phone: {
-    type: Number,
-    required: true
+    type: String, // Changed to String for flexibility (e.g., to include country code)
+    required: true,
   },
-  address: {
+  address: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'address',
+  }],
+  gender: {
     type: String,
-  },
-  pincode: {
-    type: Number,
-  },
-  city: {
-    type: String,
-  },
-  state: {
-    type: String,
-  },
-  country: {
-    type: String,
-    default: "India"
+    enum: ["Male", "Female", "Other"] // Example enum options
   },
   cart: {
-    type: Array,
-    default: [],
-
+    type: [mongoose.Schema.Types.ObjectId], // Adjust the type based on the structure of cart items
+    default: []
   },
   wishlist: {
-    type: Array,
-    default: [],
+    type: [mongoose.Schema.Types.ObjectId], // Assuming wishlist items are references to products
+    ref: 'Product', // Reference to the Product model
+    default: []
   },
   orders: {
-    type: Array,
-    default: [],
+    type: [mongoose.Schema.Types.ObjectId], // Assuming orders are references to order documents
+    ref: 'Order', // Reference to the Order model
+    default: []
   },
-}, { timestamps: true })
-export default mongoose.model("Users", userSchema);
+}, { timestamps: true });
+
+export default mongoose.model("User", userSchema);

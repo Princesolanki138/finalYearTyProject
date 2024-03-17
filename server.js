@@ -2,51 +2,60 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import morgan from "morgan";
-import connectDB from "./config/db.js"
+import connectDB from "./config/db.js";
 import authRoute from "./routes/authRoute.js";
-import categoryRoute from "./routes/categoryRoute.js"
-import productRoute from "./routes/productRoute.js"
+import categoryRoute from "./routes/categoryRoute.js";
+import productRoute from "./routes/productRoute.js";
 
-//configure environment variables
+// Configure environment variables
 dotenv.config();
 
-//establish connection with mongodb database 
+
+
+// Establish connection with MongoDB database
 connectDB();
 
 const app = express();
 
+// Middleware
 app.use(cors());
 app.use(express.json());
 app.use(morgan("dev"));
 
+// Routes
 app.use("/api/v1/auth", authRoute);
 app.use("/api/v1/category", categoryRoute);
 app.use("/api/v1/product", productRoute);
 
-
+// CORS headers for all routes
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   next();
 });
 
-app.options('*', (req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  res.sendStatus(200);
-});
-
+// Default route
 app.get("/", (req, res) => {
   res.send({
     message: "NS WATCHES",
   });
 });
 
+// Test route
 app.get("/test1", (req, res) => {
   res.send({
-    message: "test 1 successfully",
+    message: "Test 1 successfully",
+  });
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send({
+    success: false,
+    message: "Internal Server Error",
+    error: err.message
   });
 });
 

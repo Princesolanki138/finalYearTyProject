@@ -26,8 +26,7 @@ const productSchema = new mongoose.Schema({
     required: true,
   },
   images: {
-    data: Buffer,
-    contentType: Array
+    type: String, // cloudinary url
   },
   category: {
     type: mongoose.Schema.Types.ObjectId,
@@ -51,15 +50,15 @@ const productSchema = new mongoose.Schema({
     required: true,
   },
   dialcolor: {
-    type: Array,
+    type: [String], // Changed to array of strings to store multiple dial colors
     required: true,
   },
   strapColor: {
-    type: Array,
+    type: [String], // Changed to array of strings to store multiple strap colors
     required: true,
   },
-})
+}, { timestamps: true });
 
-const product = mongoose.model("products", productSchema)
+const Product = mongoose.model("Product", productSchema); // Changed model name to singular and capitalized
 
-export default product
+export default Product;

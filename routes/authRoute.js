@@ -16,6 +16,7 @@ router.get("/tester", requireSignIn, testController)
 
 router.get("/user-auth", requireSignIn, (req, res) => {
   res.status(200).send({ ok: true });
+  console.log("ok")
 });
 
 //update user profile

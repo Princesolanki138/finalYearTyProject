@@ -12,6 +12,11 @@ const requireSignIn = async (req, res, next) => {
     next();
   } catch (error) {
     console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Please Login To Access This Page",
+      error,
+    });
   }
 };
 
