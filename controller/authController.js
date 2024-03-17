@@ -7,7 +7,7 @@ import Address from "../models/addressModel.js"
 //register controller
 export const registerController = async (req, res) => {
   try {
-    const { name, email, password, phone } = req.body;
+    const { name, email, password, phone, addressData } = req.body;
 
     // Validation 
     if (!name || !email || !password || !phone) {
@@ -21,7 +21,7 @@ export const registerController = async (req, res) => {
     }
 
     // Create new address
-    // const newAddress = await Address.create(addressData);
+    const newAddress = await Address.create(addressData);
 
     // Hash the password
     const hashedPassword = await hashPassword(password);
@@ -32,6 +32,7 @@ export const registerController = async (req, res) => {
       email,
       password: hashedPassword,
       phone,
+      address: newAddress._id,
       // Save address ID in user's address array
     });
 
@@ -42,7 +43,11 @@ export const registerController = async (req, res) => {
     });
   } catch (error) {
     console.error('Error in registerController:', error);
-    res.status(500).send({ success: false, message: 'Server Error' });
+    if (error.name === 'ValidationError') {
+      return res.status(400).send({ success: false, message: error.message });
+    } else {
+      return res.status(500).send({ success: false, message: 'Server Error' });
+    }
   }
 };
 
@@ -60,7 +65,7 @@ export const loginController = async (req, res) => {
       })
     };
     //check user
-    const user = await User.findOne({ email }).populate('address')
+    const user = await User.findOne({ email }).populate("address");
     if (!user) {
       return res.status(404).send({
         success: false,
