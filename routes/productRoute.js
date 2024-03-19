@@ -1,6 +1,5 @@
 import express from "express"
 import { createProductController, deleteProductController, getProductController, getSingleProductController, productFilterController, productPhotoController, updateProductController } from "../controller/productController.js"
-import ExpressFormidable from "express-formidable"
 import { upload } from "../middleware/multer.middleware.js"
 
 const router = express.Router()
@@ -26,7 +25,9 @@ router.get("/get-product-images/:pid", productPhotoController)
 router.delete("/delete-product/:pid", deleteProductController)
 
 // update product 
-router.put("/update-product/:pid", ExpressFormidable(), updateProductController)
+router.put("/update-product/:pid", upload.fields([
+  { name: "images", maxCount: 4 },
+]), updateProductController)
 
 // filter product
 router.get("/product-filters", productFilterController);

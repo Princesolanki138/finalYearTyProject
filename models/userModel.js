@@ -29,6 +29,9 @@ const userSchema = new mongoose.Schema({
     type: String,
     enum: ["Male", "Female", "Other"] // Example enum options
   },
+  dob: {
+    type: Date,
+  },
   cart: {
     type: [mongoose.Schema.Types.ObjectId], // Adjust the type based on the structure of cart items
     ref: 'Product', // Reference to the Product model

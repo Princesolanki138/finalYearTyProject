@@ -26,7 +26,7 @@ const productSchema = new mongoose.Schema({
     required: true,
   },
   images: {
-    type: String, // cloudinary url
+    type: [String], // cloudinary url
   },
   category: {
     type: mongoose.Schema.Types.ObjectId,

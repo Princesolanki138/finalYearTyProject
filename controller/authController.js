@@ -7,7 +7,7 @@ import Address from "../models/addressModel.js"
 //register controller
 export const registerController = async (req, res) => {
   try {
-    const { name, email, password, phone, addressData } = req.body;
+    const { name, email, password, phone, addressData, gender, dob } = req.body;
 
     // Validation 
     if (!name || !email || !password || !phone) {
@@ -32,6 +32,8 @@ export const registerController = async (req, res) => {
       email,
       password: hashedPassword,
       phone,
+      gender,
+      dob,
       address: newAddress._id,
       // Save address ID in user's address array
     });
@@ -134,7 +136,7 @@ export const testController = async (req, res) => {
 
 export const updateProfile = async (req, res) => {
   try {
-    const { name, email, password, addressData, phone } = req.body;
+    const { name, email, password, addressData, phone, gender, dob } = req.body;
     const user = await User.findById(req.user._id);
 
     if (password && password.length < 6) {
@@ -163,6 +165,9 @@ export const updateProfile = async (req, res) => {
       email: email || user.email,
       password: hashedPassword || user.password,
       phone: phone || user.phone,
+      // address: updatedAddress ? [updatedAddress._id] : user.address,
+      gender: gender || user.gender,
+      dob: dob || user.dob
     }, { new: true });
 
     res.status(200).send({

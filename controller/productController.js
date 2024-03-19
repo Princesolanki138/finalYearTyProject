@@ -1,5 +1,5 @@
 import productModel from "../models/productModel.js";
-import { uploadCloudinary } from "../utils/cloudinaryConfig.js"
+import { uploadCloudinary, } from "../utils/cloudinaryConfig.js"
 
 import slugify from "slugify";
 import fs from "fs";
@@ -24,19 +24,21 @@ export const createProductController = async (req, res) => {
       strapColor,
     } = req.body;
 
-    const imagesLocalPath = req.files.images[0].path;
-
-    //console.log(imagesLocalPath)
-
-    if (!imagesLocalPath) {
-      return res.status(400).json({ error: "No image file uploaded" });
+    console.log("imagesLocalPaths", req.files.images)
+    // Check if any files were uploaded
+    if (!req.files || !req.files.images || req.files.images.length === 0) {
+      return res.status(400).json({ error: "No images uploaded" });
     }
 
-    const images = await uploadCloudinary(imagesLocalPath);
-    // console.log(images)
+    const imagesLocalPaths = req.files.images.map(images => images.path);
 
-    if (!images) {
-      return res.status(400).json({ error: "No image file uploaded" });
+    let imagesUrls;
+    try {
+      // Upload images to Cloudinary
+      imagesUrls = await uploadCloudinary(imagesLocalPaths);
+    } catch (uploadError) {
+      console.error("Error uploading images:", uploadError);
+      return res.status(500).json({ error: "Error uploading images" });
     }
 
     // Validate required fields
@@ -52,7 +54,6 @@ export const createProductController = async (req, res) => {
       return res.status(400).json({ error: "Dialcolor and strapColor must be non-empty arrays" });
     }
 
-    // console.log(`strapColor ${strapColor} dialcolor ${dialcolor}`)
 
     // Create a new product instance
     const product = new Product({
@@ -68,11 +69,10 @@ export const createProductController = async (req, res) => {
       description,
       dialcolor,
       strapColor,
-      images: images.url,
+      images: imagesUrls,
       slug: slugify(name),
     });
-    //console.log(images)
-    // console.log(`strapColor ${strapColor} dialcolor ${dialcolor}`)
+
     // Save the product to the database
     await product.save();
 
@@ -100,7 +100,7 @@ export const getProductController = async (req, res) => {
 
     const products = await productModel
       .find({})
-      .select("-images")
+      // .select("-images")
       .populate("category")
       .skip((page - 1) * perPage)
       .limit(perPage)
@@ -144,41 +144,42 @@ export const getSingleProductController = async (req, res) => {
 //get images
 export const productPhotoController = async (req, res) => {
   try {
-
     const product = await productModel.findById(req.params.pid).select("images");
 
-    if (!product || !product.images || !product.images.data) {
+    if (!product || !product.images) {
       return res.status(404).json({ success: false, message: "Product image not found" });
     }
 
-    res.set("Content-type", product.images.contentType);
-    return res.status(200).send(product.images.data);
+    // Directly redirect to the Cloudinary image URL
+    return res.redirect(product.images);
   } catch (error) {
     console.error(error);
     res.status(500).json({
       success: false,
-      message: "Error while getting images",
+      message: "Error while getting product image",
       error: error.message
     });
   }
 };
 
 
-
 // delete product
 export const deleteProductController = async (req, res) => {
   try {
-    await productModel.findByIdAndDelete(req.params.pid).select("-photo");
-    res.status(200).send({
+    const deletedProduct = await productModel.findByIdAndDelete(req.params.pid);
+    if (!deletedProduct) {
+      return res.status(404).json({ success: false, message: "Product not found" });
+    }
+    res.status(200).json({
       success: true,
-      message: "Product Deleted successfully",
+      message: "Product deleted successfully",
     });
   } catch (error) {
-    console.log(error);
-    res.status(500).send({
+    console.error(error);
+    res.status(500).json({
       success: false,
       message: "Error while deleting product",
-      error,
+      error: error.message, // Include error message in response for debugging
     });
   }
 };
@@ -187,73 +188,85 @@ export const deleteProductController = async (req, res) => {
 
 export const updateProductController = async (req, res) => {
   try {
-    // Ensure that req.fields is defined
-    if (!req.fields) {
-      return res.status(400).send({ error: 'Form data not parsed correctly' });
+    const {
+      name,
+      brand,
+      mrp,
+      price,
+      modelno,
+      category,
+      gender,
+      warranty,
+      country_of_origin,
+      description,
+      dialcolor,
+      strapColor,
+    } = req.body;
+
+    // Create update object
+    const updateObj = {
+      name,
+      brand,
+      mrp,
+      price,
+      modelno,
+      category,
+      gender,
+      warranty,
+      country_of_origin,
+      description,
+      dialcolor,
+      strapColor,
+    };
+
+    // Add slug if name exists
+    if (name) {
+      updateObj.slug = slugify(name);
     }
 
-    const { name, brand, mrp, price, modelno, category, gender, warranty, country_of_origin, description, dialcolor, strapColor } = req.fields;
-    const { images } = req.files;
-
-    // Validation code...
-
-    switch (true) {
-      case !name:
-        return res.status(500).send({ error: "Name is Required" });
-      case !brand:
-        return res.status(500).send({ error: "Brand is Required" });
-      case !mrp:
-        return res.status(500).send({ error: "MRP is Required" });
-      case !price:
-        return res.status(500).send({ error: "Price is Required" });
-      case !modelno:
-        return res.status(500).send({ error: "Model No. is Required" });
-      case !category:
-        return res.status(500).send({ error: "Category is Required" });
-      case !gender:
-        return res.status(500).send({ error: "Gender is Required" });
-      case !warranty:
-        return res.status(500).send({ error: "Warranty is Required" });
-      case !country_of_origin:
-        return res.status(500).send({ error: "Country of Origin is Required" });
-      case !description:
-        return res.status(500).send({ error: "Description is Required" });
-      case !dialcolor:
-        return res.status(500).send({ error: "Dial Color is Required" });
-      case !strapColor:
-        return res.status(500).send({ error: "Strap Color is Required" });
-      case images && images.size > 1000000:
-        return res.status(500).send({ error: "Image is required and should be less then 1mb" });
+    // Check if images are uploaded
+    if (req.files && req.files.images) {
+      const imagesLocalPath = req.files.images[0].path;
+      const images = await uploadCloudinary(imagesLocalPath);
+      if (!images) {
+        return res.status(400).json({ error: "Error uploading images" });
+      }
+      // Add images URL to update object
+      updateObj.images = images.url;
     }
 
-    const products = new productModel.findByIdAndUpdate(req.params.pid, { ...req.fields, slug: slugify(name) }, { new: true });
+    // Update the product in the database
+    const updatedProduct = await Product.findByIdAndUpdate(req.params.pid, updateObj, { new: true });
 
-    if (images) {
-      products.images.data = fs.readFileSync(images.path);
-      products.images.contentType = images.type;
+    if (!updatedProduct) {
+      return res.status(404).json({ error: "Product not found" });
     }
-    await products.save();
 
-    res.status(201).send({
+    res.status(200).json({
       success: true,
-      message: 'Product updated Successfully',
-      products,
+      message: 'Product Updated Successfully',
+      product: updatedProduct,
     });
   } catch (error) {
     console.error(error);
-    res.status(500).send({
+    res.status(500).json({
       success: false,
       error,
-      message: 'Error in updating product',
+      message: 'Error while updating product',
     });
-  };
+  }
 };
+
+
 
 //product filter 
 
 export const productFilterController = async (req, res) => {
   try {
     const filter = {}
+    if (req.query.category) {
+      filter.category = req.query.category
+    }
     if (req.query.brand) {
       filter.brand = req.query.brand
     }

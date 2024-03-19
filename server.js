@@ -11,7 +11,6 @@ import productRoute from "./routes/productRoute.js";
 dotenv.config();
 
 
-
 // Establish connection with MongoDB database
 connectDB();
 
