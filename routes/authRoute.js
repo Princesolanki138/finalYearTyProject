@@ -1,7 +1,8 @@
 import express from "express";
-import { getUserController, loginController, registerController, testController, updateProfile }
+import { addToCartController, getUserController, loginController, registerController, testController, updateProfile }
   from "../controller/authController.js";
 import requireSignIn from "../middleware/authMiddleware.js"
+
 
 const router = express.Router();
 
@@ -15,8 +16,7 @@ router.post("/login", loginController);
 router.get("/tester", requireSignIn, testController)
 
 router.get("/user-auth", requireSignIn, (req, res) => {
-  res.status(200).send({ ok: true });
-  console.log("ok")
+  res.status(200).send({ success: true, message: "User Authenticated", user: req.user });
 });
 
 //update user profile
@@ -24,5 +24,7 @@ router.put("/update-user", requireSignIn, updateProfile);
 
 //get user profile
 router.get("/profile", requireSignIn, getUserController);
+
+router.post("/add-to-cart", requireSignIn, addToCartController)
 
 export default router;

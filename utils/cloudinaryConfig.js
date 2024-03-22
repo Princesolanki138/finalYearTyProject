@@ -51,4 +51,32 @@ const uploadCloudinary = async (localFilePaths) => {
   }
 };
 
-export { uploadCloudinary };
+const deleteCloudinary = async (publicIds) => {
+  try {
+    if (!publicIds) {
+      throw new Error("No public IDs provided");
+    }
+
+    for (const publicId of publicIds) {
+      if (publicId) {
+        const res = await cloudinary.uploader.destroy(publicId);
+        if (res && res.result === "ok") {
+          console.log("File deleted successfully from Cloudinary:", publicId);
+        } else {
+          console.error("Error deleting file from Cloudinary:", res);
+        }
+      }
+      else {
+        throw new Error("No public IDs provided");
+      }
+    }
+
+  } catch (error) {
+    console.error("Error deleting files from Cloudinary:", error.message);
+  }
+
+}
+
+
+
+export { uploadCloudinary, deleteCloudinary };

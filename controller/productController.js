@@ -125,7 +125,7 @@ export const getSingleProductController = async (req, res) => {
   try {
     const product = await productModel
       .findOne({ slug: req.params.slug })
-      .select("-images")
+      // .select("-images")
       .populate("category");
     res.status(200).send({
       success: true,
@@ -226,13 +226,13 @@ export const updateProductController = async (req, res) => {
 
     // Check if images are uploaded
     if (req.files && req.files.images) {
-      const imagesLocalPath = req.files.images[0].path;
-      const images = await uploadCloudinary(imagesLocalPath);
+      const imagesLocalPaths = req.files.images.map(image => image.path);
+      const images = await uploadCloudinary(imagesLocalPaths);
       if (!images) {
         return res.status(400).json({ error: "Error uploading images" });
       }
-      // Add images URL to update object
-      updateObj.images = images.url;
+      // Add images URLs to update object
+      updateObj.images = images;
     }
 
     // Update the product in the database
@@ -266,6 +266,7 @@ export const productFilterController = async (req, res) => {
     const filter = {}
     if (req.query.category) {
       filter.category = req.query.category
+
     }
     if (req.query.brand) {
       filter.brand = req.query.brand
@@ -279,7 +280,7 @@ export const productFilterController = async (req, res) => {
     if (req.query.priceRange) {
       filter.price = { $gte: priceRange[0], $lte: priceRange[1] };
     }
-    const products = await productModel.find(filter);
+    const products = await productModel.find(filter).populate("category");
 
     res.status(200).send({
       success: true,
@@ -295,4 +296,6 @@ export const productFilterController = async (req, res) => {
     })
   }
 }
+
+
 

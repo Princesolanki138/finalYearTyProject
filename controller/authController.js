@@ -2,6 +2,8 @@ import JWT from "jsonwebtoken"
 import { comparePassd, hashPassword } from "../helpers/authHelper.js"
 import User from "../models/userModel.js"
 import Address from "../models/addressModel.js"
+import Cart from "../models/cartModel.js"
+import Product from "../models/productModel.js"
 
 
 //register controller
@@ -81,21 +83,31 @@ export const loginController = async (req, res) => {
         message: "Wrong Password",
       })
     }
+
+    // Fetch address associated with the user
+    const addressId = user.address[0]; // Assuming address ID is at index 0
+    const address = await Address.findById(addressId);
+
+    // Fetch cart associated with the user
+    const cart = await Cart.findOne({ user: user._id });
+
     //token
     const token = await JWT.sign({ _id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "7d",
     });
-    console.log(token)
+    // console.log(token)
 
-    res.status(200).send({
+    res.status(200).json({
       success: true,
       message: "login successfully",
       user: {
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        phone: user.phone,
-        address: user.address.map((address) => ({
+        _id: user._id || null,
+        name: user.name || null,
+        email: user.email || null,
+        phone: user.phone || null,
+        gender: user.gender || null,
+        dob: user.dob || null,
+        address: address ? {
           id: address._id,
           Area: address.Area,
           pincode: address.pincode,
@@ -103,7 +115,11 @@ export const loginController = async (req, res) => {
           street: address.street,
           city: address.city,
           country: address.country
-        }))
+        } : null
+      },
+      cart: {
+        CartId: cart ? cart._id : null,
+        Cartitems: cart ? cart.items : null,
       },
       token
     })
@@ -196,3 +212,38 @@ export const getUserController = async (req, res) => {
     res.status(500).send({ success: false, message: 'Server Error' });
   }
 }
+
+export const addToCartController = async (req, res) => {
+  try {
+    const { productId } = req.body;
+    const userId = req.user._id;
+
+    let cart = await Cart.findOne({ user: userId }).populate("user");
+
+    if (!cart) {
+      // If user doesn't have a cart, create a new one
+      cart = new Cart({ user: userId, items: [] });
+    }
+
+    // Check if the product is already in the cart
+    const existingItemIndex = cart.items.findIndex(item => item.product.toString() === productId);
+
+
+    if (existingItemIndex !== -1) {
+      // If the product is already in the cart, update the quantity
+      res.send({
+        message: "product already in cart"
+      })
+    } else {
+      // If the product is not in the cart, add it as a new item
+      cart.items.push({ product: productId });
+    }
+
+    await cart.save();
+
+    res.status(200).json({ success: true, message: 'Product added to cart successfully', cart });
+  } catch (error) {
+    console.error('Error adding product to cart:', error);
+    res.status(500).json({ success: false, error, message: 'Error adding product to cart' });
+  }
+};

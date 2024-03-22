@@ -32,14 +32,9 @@ const userSchema = new mongoose.Schema({
   dob: {
     type: Date,
   },
-  cart: {
-    type: [mongoose.Schema.Types.ObjectId], // Adjust the type based on the structure of cart items
-    ref: 'Product', // Reference to the Product model
-    default: []
-  },
   wishlist: {
     type: [mongoose.Schema.Types.ObjectId], // Assuming wishlist items are references to products
-    ref: 'Product', // Reference to the Product model
+    ref: 'cart', // Reference to the Product model
     default: []
   },
   orders: {
