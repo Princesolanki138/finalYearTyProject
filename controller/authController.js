@@ -109,12 +109,13 @@ export const loginController = async (req, res) => {
         dob: user.dob || null,
         address: address ? {
           id: address._id,
-          Area: address.Area,
-          pincode: address.pincode,
-          landmark: address.landmark,
-          street: address.street,
-          city: address.city,
-          country: address.country
+          Area: address.Area || null,
+          pincode: address.pincode || null,
+          landmark: address.landmark || null,
+          state: address.state || null,
+          street: address.street || null,
+          city: address.city || null,
+          country: address.country || null
         } : null
       },
       cart: {
@@ -186,11 +187,22 @@ export const updateProfile = async (req, res) => {
       dob: dob || user.dob
     }, { new: true });
 
+
+
+
     res.status(200).send({
       success: true,
       message: 'Profile updated successfully',
       user: updatedUser,
-      address: updatedAddress, // Send the updated address along with the user
+      address: updatedAddress ? {
+        Area: updatedAddress.Area || null,
+        pincode: updatedAddress.pincode || null,
+        landmark: updatedAddress.landmark || null,
+        state: updatedAddress.state || null,
+        street: updatedAddress.street || null,
+        city: updatedAddress.city || null,
+        country: updatedAddress.country || null
+      } : null
     });
   } catch (error) {
     console.error('Error in updateProfile:', error);
