@@ -109,12 +109,12 @@ export const loginController = async (req, res) => {
         dob: user.dob || null,
         address: address ? {
           id: address._id,
-          Area: address.Area,
-          pincode: address.pincode,
-          landmark: address.landmark,
-          street: address.street,
-          city: address.city,
-          country: address.country
+          Area: address.Area || null,
+          pincode: address.pincode || null,
+          landmark: address.landmark || null,
+          street: address.street || null,
+          city: address.city || null,
+          country: address.country || null
         } : null
       },
       cart: {
