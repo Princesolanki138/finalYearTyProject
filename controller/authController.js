@@ -193,20 +193,39 @@ export const updateProfile = async (req, res) => {
     res.status(200).send({
       success: true,
       message: 'Profile updated successfully',
-      user: updatedUser,
-      address: updatedAddress ? {
-        Area: updatedAddress.Area || null,
-        pincode: updatedAddress.pincode || null,
-        landmark: updatedAddress.landmark || null,
-        state: updatedAddress.state || null,
-        street: updatedAddress.street || null,
-        city: updatedAddress.city || null,
-        country: updatedAddress.country || null
-      } : null
+      user: updatedUser ? {
+        UserObjId: updatedUser._id || null,
+        name: updatedUser.name || null,
+        email: updatedUser.email || null,
+        phone: updatedUser.phone || null,
+        gender: updatedUser.gender || null,
+        dob: updatedUser.dob || null,
+        address: updatedAddress ? {
+          addressObjId: updatedAddress._id,
+          Area: updatedAddress.Area || null,
+          pincode: updatedAddress.pincode || null,
+          landmark: updatedAddress.landmark || null,
+          state: updatedAddress.state || null,
+          street: updatedAddress.street || null,
+          city: updatedAddress.city || null,
+          country: updatedAddress.country || null
+        } : null
+      }
+        : null,
+      // Address: updatedAddress ? {
+      //   addressObjId: updatedAddress._id,
+      //   Area: updatedAddress.Area || null,
+      //   pincode: updatedAddress.pincode || null,
+      //   landmark: updatedAddress.landmark || null,
+      //   state: updatedAddress.state || null,
+      //   street: updatedAddress.street || null,
+      //   city: updatedAddress.city || null,
+      //   country: updatedAddress.country || null
+      // } : null
     });
   } catch (error) {
     console.error('Error in updateProfile:', error);
-    res.status(500).send({ success: false, message: 'Server Error' });
+    res.status(500).send({ success: false, message: 'Server Error in profile controller' });
   }
 };
 
