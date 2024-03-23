@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import Address from "./addressModel.js";
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -27,7 +26,6 @@ const userSchema = new mongoose.Schema({
   }],
   gender: {
     type: String,
-    enum: ["Male", "Female", "Other"] // Example enum options
   },
   dob: {
     type: Date,
