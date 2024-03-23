@@ -172,7 +172,7 @@ export const updateProfile = async (req, res) => {
         updatedAddress = await Address.findByIdAndUpdate(user.address[0], addressData, { new: true });
       }
     }
-    console.log("updatedAddress" , updatedAddress)
+    console.log("addressData" , addressData)
     // Hash password if provided
     const hashedPassword = password ? await hashPassword(password) : undefined;
 
