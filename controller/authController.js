@@ -172,7 +172,7 @@ export const updateProfile = async (req, res) => {
         updatedAddress = await Address.findByIdAndUpdate(user.address[0], addressData, { new: true });
       }
     }
-
+    console.log("updatedAddress" , updatedAddress)
     // Hash password if provided
     const hashedPassword = password ? await hashPassword(password) : undefined;
 
@@ -187,7 +187,7 @@ export const updateProfile = async (req, res) => {
       dob: dob || user.dob
     }, { new: true });
 
-
+    console.log(" updatedUser" ,  updatedUser)
 
 
     res.status(200).send({
