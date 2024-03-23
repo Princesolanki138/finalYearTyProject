@@ -89,7 +89,7 @@ export const loginController = async (req, res) => {
     const address = await Address.findById(addressId);
 
     // Fetch cart associated with the user
-    const cart = await Cart.findOne({ user: user._id });
+    // const cart = await Cart.findOne({ user: user._id });
 
     //token
     const token = await JWT.sign({ _id: user._id }, process.env.JWT_SECRET, {
@@ -97,7 +97,7 @@ export const loginController = async (req, res) => {
     });
     // console.log(token)
 
-    res.status(200).json({
+    res.status(200).send({
       success: true,
       message: "login successfully",
       user: {
@@ -115,13 +115,13 @@ export const loginController = async (req, res) => {
           state: address.state || null,
           street: address.street || null,
           city: address.city || null,
-          country: address.country || null
+          country: address.country || "India",
         } : null
       },
-      cart: {
-        CartId: cart ? cart._id : null,
-        Cartitems: cart ? cart.items : null,
-      },
+      // cart: {
+      //   CartId: cart ? cart._id : null,
+      //   Cartitems: cart ? cart.items : null,
+      // },
       token
     })
 
@@ -153,7 +153,7 @@ export const testController = async (req, res) => {
 
 export const updateProfile = async (req, res) => {
   try {
-    const { name, email, password, addressData, phone, gender, dob } = req.body;
+    const { name, email, password, Address, phone, gender, dob } = req.body;
     const user = await User.findById(req.user._id);
 
     if (password && password.length < 6) {
@@ -161,18 +161,18 @@ export const updateProfile = async (req, res) => {
     }
 
     let updatedAddress;
-    if (addressData) {
+    if (Address) {
       // Create or update address
       if (user.address.length === 0) {
         // If user doesn't have an address, create a new one
-        updatedAddress = await Address.create(addressData);
+        updatedAddress = await Address.create(Address);
         user.address.push(updatedAddress._id);
       } else {
         // If user has an address, update the existing one
-        updatedAddress = await Address.findByIdAndUpdate(user.address[0], addressData, { new: true });
+        updatedAddress = await Address.findByIdAndUpdate(user.address[0], Address, { new: true });
       }
     }
-    console.log("addressData", addressData)
+    console.log("addressData", Address)
     // Hash password if provided
     const hashedPassword = password ? await hashPassword(password) : undefined;
 
@@ -197,17 +197,17 @@ export const updateProfile = async (req, res) => {
         phone: updatedUser.phone || null,
         gender: updatedUser.gender || null,
         dob: updatedUser.dob || null,
+        address: updatedAddress ? {
+          id: updatedAddress._id || null,
+          Area: updatedAddress.Area || null,
+          pincode: updatedAddress.pincode || null,
+          landmark: updatedAddress.landmark || null,
+          state: updatedAddress.state || null,
+          street: updatedAddress.street || null,
+          city: updatedAddress.city || null,
+          country: updatedAddress.country || "India"
+        } : null,
       } : null,
-      address: updatedAddress ? {
-        id: updatedAddress._id || null,
-        Area: updatedAddress.Area || null,
-        pincode: updatedAddress.pincode || null,
-        landmark: updatedAddress.landmark || null,
-        state: updatedAddress.state || null,
-        street: updatedAddress.street || null,
-        city: updatedAddress.city || null,
-        country: updatedAddress.country || "India"
-      } : null
     });
   } catch (error) {
     console.error('Error in updateProfile:', error);
@@ -232,7 +232,7 @@ export const getUserController = async (req, res) => {
 
 export const addToCartController = async (req, res) => {
   try {
-    const { productId } = req.body;
+    const { productId, quantity } = req.body;
     const userId = req.user._id;
 
     let cart = await Cart.findOne({ user: userId }).populate("user");
@@ -245,12 +245,12 @@ export const addToCartController = async (req, res) => {
     // Check if the product is already in the cart
     const existingItemIndex = cart.items.findIndex(item => item.product.toString() === productId);
 
-
     if (existingItemIndex !== -1) {
+      quantity = cart.items[existingItemIndex].quantity
+      cart.items[existingItemIndex].quantity = quantity + 1
+
       // If the product is already in the cart, update the quantity
-      res.send({
-        message: "product already in cart"
-      })
+      console.log(quantity, "quantity")
     } else {
       // If the product is not in the cart, add it as a new item
       cart.items.push({ product: productId });
