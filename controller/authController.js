@@ -153,7 +153,7 @@ export const testController = async (req, res) => {
 
 export const updateProfile = async (req, res) => {
   try {
-    const { name, email, password, Address, phone, gender, dob } = req.body;
+    const { name, email, password, address, phone, gender, dob } = req.body;
     const user = await User.findById(req.user._id);
 
     if (password && password.length < 6) {
@@ -161,18 +161,21 @@ export const updateProfile = async (req, res) => {
     }
 
     let updatedAddress;
-    if (Address) {
+    if (address) {
       // Create or update address
       if (user.address.length === 0) {
         // If user doesn't have an address, create a new one
-        updatedAddress = await Address.create(Address);
+        updatedAddress = new Address(address);
+        await updatedAddress.save();
         user.address.push(updatedAddress._id);
       } else {
         // If user has an address, update the existing one
-        updatedAddress = await Address.findByIdAndUpdate(user.address[0], Address, { new: true });
+        const existingAddress = await Address.findById(user.address[0]);
+        Object.assign(existingAddress, address); // Update address fields
+        updatedAddress = await existingAddress.save();
       }
     }
-    console.log("addressData", Address)
+
     // Hash password if provided
     const hashedPassword = password ? await hashPassword(password) : undefined;
 
@@ -182,7 +185,6 @@ export const updateProfile = async (req, res) => {
       email: email || user.email,
       password: hashedPassword || user.password,
       phone: phone || user.phone,
-      // address: updatedAddress ? [updatedAddress._id] : user.address,
       gender: gender || user.gender,
       dob: dob || user.dob
     }, { new: true });
@@ -215,6 +217,7 @@ export const updateProfile = async (req, res) => {
   }
 };
 
+
 // get user detail
 export const getUserController = async (req, res) => {
   try {
@@ -242,18 +245,21 @@ export const addToCartController = async (req, res) => {
       cart = new Cart({ user: userId, items: [] });
     }
 
+    // Ensure that the quantity is a valid number
+    const parsedQuantity = parseInt(quantity);
+    if (isNaN(parsedQuantity) || parsedQuantity <= 0) {
+      return res.status(400).json({ success: false, message: 'Invalid quantity' });
+    }
+
     // Check if the product is already in the cart
     const existingItemIndex = cart.items.findIndex(item => item.product.toString() === productId);
 
     if (existingItemIndex !== -1) {
-      quantity = cart.items[existingItemIndex].quantity
-      cart.items[existingItemIndex].quantity = quantity + 1
-
       // If the product is already in the cart, update the quantity
-      console.log(quantity, "quantity")
+      cart.items[existingItemIndex].quantity += parsedQuantity;
     } else {
       // If the product is not in the cart, add it as a new item
-      cart.items.push({ product: productId });
+      cart.items.push({ product: productId, quantity: parsedQuantity });
     }
 
     await cart.save();
