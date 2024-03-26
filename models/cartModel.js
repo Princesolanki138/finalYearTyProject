@@ -6,7 +6,10 @@ const cartItemSchema = new mongoose.Schema({
     ref: 'Product', // Reference to the Product model
     required: true
   },
-
+  quantity: {
+    type: Number,
+    default: 1
+  }
 });
 
 const cartSchema = new mongoose.Schema({
@@ -15,7 +18,16 @@ const cartSchema = new mongoose.Schema({
     ref: 'User', // Reference to the User model
     required: true
   },
-  items: [cartItemSchema] // Array of cart items
+  items: [cartItemSchema], // Array of cart items
+  totalCartItem: {
+    type: Number,
+    default: 0
+  },
+  totalCartValue: {
+    type: Number,
+    default: 0
+  }
+
 });
 
 export default mongoose.model("Cart", cartSchema);

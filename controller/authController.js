@@ -238,7 +238,8 @@ export const addToCartController = async (req, res) => {
     const { productId, quantity } = req.body;
     const userId = req.user._id;
 
-    let cart = await Cart.findOne({ user: userId }).populate("user");
+    let cart = await Cart.findOne({ user: userId })
+    let product = await Product.findById(productId);
 
     if (!cart) {
       // If user doesn't have a cart, create a new one
@@ -246,13 +247,13 @@ export const addToCartController = async (req, res) => {
     }
 
     // Ensure that the quantity is a valid number
-    const parsedQuantity = parseInt(quantity);
+    const parsedQuantity = parseInt(quantity || 1); // Default to 1 if quantity is not provided or invalid
     if (isNaN(parsedQuantity) || parsedQuantity <= 0) {
       return res.status(400).json({ success: false, message: 'Invalid quantity' });
     }
 
     // Check if the product is already in the cart
-    const existingItemIndex = cart.items.findIndex(item => item.product.toString() === productId);
+    const existingItemIndex = cart.items.findIndex(item => item.product._id.toString() === productId);
 
     if (existingItemIndex !== -1) {
       // If the product is already in the cart, update the quantity
@@ -262,11 +263,114 @@ export const addToCartController = async (req, res) => {
       cart.items.push({ product: productId, quantity: parsedQuantity });
     }
 
+    // Calculate total cart item count
+    cart.totalCartItem = cart.items.length;
+
+    // Calculate total cart value
+    cart.totalCartValue = cart.items.reduce((total, item) => total + item.quantity * product.price, 0);
+
+    // Save the updated cart
     await cart.save();
 
-    res.status(200).json({ success: true, message: 'Product added to cart successfully', cart });
+    res.status(200).json({ success: true, message: 'Product added to cart successfully', cart: { _id: cart._id, items: cart.items, totalCartItem: cart.totalCartItem, totalCartValue: cart.totalCartValue } });
   } catch (error) {
     console.error('Error adding product to cart:', error);
     res.status(500).json({ success: false, error, message: 'Error adding product to cart' });
   }
 };
+
+
+
+// increaseQuantityController.js
+export const increaseQuantityController = async (req, res) => {
+  try {
+    const { productId } = req.body;
+    const userId = req.user ? req.user._id : null; // Check if req.user exists
+
+    if (!userId) {
+      return res.status(401).json({ success: false, message: 'User not authenticated' });
+    }
+
+    let cart = await Cart.findOne({ user: userId })
+    let product = await Product.findById(productId);
+
+    console.log('productId:', productId, 'userId:', userId);
+    if (!cart) {
+      // If user doesn't have a cart, create a new one
+      cart = new Cart({ user: userId, items: [] });
+    }
+
+    // Find the item in the cart
+    const existingItem = cart.items.find(item => item.product._id.toString() === productId);
+
+    if (existingItem) {
+      // If the product is already in the cart, increase the quantity
+      existingItem.quantity++;
+    } else {
+      // If the product is not in the cart, add it as a new item with quantity 1
+      cart.items.push({ product: productId, quantity: 1 });
+    }
+
+    // Calculate total cart item count
+    cart.totalCartItem = cart.items.length;
+
+    // Calculate total cart value
+    cart.totalCartValue = cart.items.reduce((total, item) => total + item.quantity * product.price, 0);
+
+    // Save the updated cart
+    await cart.save();
+
+    res.status(200).json({ success: true, message: 'Quantity increased successfully', cart: { _id: cart._id, items: cart.items } });
+  } catch (error) {
+    console.error('Error increasing quantity:', error);
+    res.status(500).json({ success: false, error, message: 'Error increasing quantity' });
+  }
+};
+
+
+// decreaseQuantityController.js
+export const decreaseQuantityController = async (req, res) => {
+  try {
+    const { productId } = req.body;
+    const userId = req.user._id;
+
+    let cart = await Cart.findOne({ user: userId })
+    let product = await Product.findById(productId);
+
+    if (!cart) {
+      // If user doesn't have a cart, return an error
+      return res.status(404).json({ success: false, message: 'Cart not found' });
+    }
+
+    // Find the item in the cart
+    const existingItem = cart.items.find(item => item.product._id.toString() === productId);
+
+    if (existingItem) {
+      // If the product is already in the cart and its quantity is greater than 1, decrease the quantity
+      if (existingItem.quantity > 1) {
+        existingItem.quantity--;
+      } else {
+        // If the quantity is 1, remove the item from the cart
+        cart.items = cart.items.filter(item => item.product._id.toString() !== productId);
+      }
+    } else {
+      // If the product is not in the cart, return an error
+      return res.status(404).json({ success: false, message: 'Product not found in cart' });
+    }
+
+    // Calculate total cart item count
+    cart.totalCartItem = cart.items.length;
+
+    // Calculate total cart value
+    cart.totalCartValue = cart.items.reduce((total, item) => total + item.quantity * product.price, 0);
+
+    // Save the updated cart
+    await cart.save();
+
+    res.status(200).json({ success: true, message: 'Quantity decreased successfully', cart: { _id: cart._id, items: cart.items } });
+  } catch (error) {
+    console.error('Error decreasing quantity:', error);
+    res.status(500).json({ success: false, error, message: 'Error decreasing quantity' });
+  }
+};
+

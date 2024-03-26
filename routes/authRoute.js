@@ -1,5 +1,5 @@
 import express from "express";
-import { addToCartController, getUserController, loginController, registerController, testController, updateProfile }
+import { addToCartController, decreaseQuantityController, getUserController, increaseQuantityController, loginController, registerController, testController, updateProfile }
   from "../controller/authController.js";
 import requireSignIn from "../middleware/authMiddleware.js"
 
@@ -26,5 +26,12 @@ router.put("/update-user", requireSignIn, updateProfile);
 router.get("/profile", requireSignIn, getUserController);
 
 router.post("/add-to-cart", requireSignIn, addToCartController)
+
+router.post('/cart-increase-quantity', requireSignIn, increaseQuantityController);
+
+router.post('/cart-decrease-quantity', requireSignIn, decreaseQuantityController);
+
+
+
 
 export default router;
