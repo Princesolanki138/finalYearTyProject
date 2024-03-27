@@ -374,3 +374,45 @@ export const decreaseQuantityController = async (req, res) => {
   }
 };
 
+
+export const removeCartProductController = async (req, res) => {
+  try {
+    const { productId } = req.body;
+    const userId = req.user ? req.user._id : null;
+
+    let product = await Product.findById(productId);
+
+    if (!userId) {
+      return res.status(401).json({ success: false, message: 'User not authenticated' });
+    }
+
+    let cart = await Cart.findOne({ user: userId });
+
+    if (!cart) {
+      return res.status(404).json({ success: false, message: 'Cart not found' });
+    }
+
+    const itemIndex = cart.items.findIndex(item => item.product.toString() === productId);
+
+    if (itemIndex === -1) {
+      return res.status(404).json({ success: false, message: 'Product not found in cart' });
+    }
+
+    // Remove the item from the cart
+    cart.items.splice(itemIndex, 1);
+
+    // Calculate total cart item count
+    cart.totalCartItem = cart.items.length;
+
+    // Calculate total cart value
+    cart.totalCartValue = cart.items.reduce((total, item) => total + item.quantity * product.price, 0);
+
+    // Save the updated cart
+    await cart.save();
+
+    res.status(200).json({ success: true, message: 'Product removed from cart successfully', cart: { _id: cart._id, items: cart.items, totalCartItem: cart.totalCartItem, totalCartValue: cart.totalCartValue } });
+  } catch (error) {
+    console.error('Error removing product from cart:', error);
+    res.status(500).json({ success: false, error, message: 'Error removing product from cart' });
+  }
+}
