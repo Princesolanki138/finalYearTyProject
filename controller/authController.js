@@ -238,7 +238,7 @@ export const addToCartController = async (req, res) => {
     const { productId, quantity } = req.body;
     const userId = req.user._id;
 
-    let cart = await Cart.findOne({ user: userId })
+    let cart = await Cart.findOne({ user: userId });
     let product = await Product.findById(productId);
 
     if (!cart) {
@@ -263,16 +263,25 @@ export const addToCartController = async (req, res) => {
       cart.items.push({ product: productId, quantity: parsedQuantity });
     }
 
+    // Save the updated cart
+    await cart.save();
+
+    // fetch all product in cart items
+    const cartItems = await Promise.all(cart.items.map(async (item) => {
+      const productDetails = await Product.findById(item.product);
+      return {
+        ...item.toObject(),
+        product: productDetails
+      }
+    }))
+
     // Calculate total cart item count
     cart.totalCartItem = cart.items.length;
 
     // Calculate total cart value
     cart.totalCartValue = cart.items.reduce((total, item) => total + item.quantity * product.price, 0);
 
-    // Save the updated cart
-    await cart.save();
-
-    res.status(200).json({ success: true, message: 'Product added to cart successfully', cart: { _id: cart._id, items: cart.items, totalCartItem: cart.totalCartItem, totalCartValue: cart.totalCartValue } });
+    res.status(200).json({ success: true, message: 'Product added to cart successfully', cart: { _id: cart._id, items: cartItems }, totalCartItem: cart.totalCartItem, totalCartValue: cart.totalCartValue });
   } catch (error) {
     console.error('Error adding product to cart:', error);
     res.status(500).json({ success: false, error, message: 'Error adding product to cart' });

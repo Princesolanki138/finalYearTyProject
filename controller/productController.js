@@ -298,4 +298,28 @@ export const productFilterController = async (req, res) => {
 }
 
 
+export const searchProductController = async (req, res) => {
+  try {
+    const query = req.query.q;
+    const products = await productModel.find({
+      $or: [{
+        name: { $regex: query, $options: "i" }
+      },
+      { modelno: { $regex: query, $options: "i" } },
+      { brand: { $regex: query, $options: "i" } },
+      ]
+    })
 
+    res.status(200).send({
+      success: true,
+      products,
+    })
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Error While Searching Products",
+      error,
+    })
+  }
+}
