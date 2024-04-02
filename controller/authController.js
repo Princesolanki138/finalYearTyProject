@@ -241,6 +241,7 @@ export const addToCartController = async (req, res) => {
     let cart = await Cart.findOne({ user: userId });
     let product = await Product.findById(productId);
 
+
     if (!cart) {
       // If user doesn't have a cart, create a new one
       cart = new Cart({ user: userId, items: [] });
@@ -274,6 +275,8 @@ export const addToCartController = async (req, res) => {
         product: productDetails
       }
     }))
+
+    console.log(cartItems);
 
     // Calculate total cart item count
     cart.totalCartItem = cart.items.length;
@@ -409,6 +412,7 @@ export const removeCartProductController = async (req, res) => {
 
     // Remove the item from the cart
     cart.items.splice(itemIndex, 1);
+
 
     // Calculate total cart item count
     cart.totalCartItem = cart.items.length;
