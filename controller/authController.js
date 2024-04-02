@@ -386,8 +386,8 @@ export const decreaseQuantityController = async (req, res) => {
 
 export const removeCartProductController = async (req, res) => {
   try {
-    const { productId } = req.body;
-    const userId = req.user ? req.user._id : null;
+    const { userId,productId } = req.body;
+    
 
     let product = await Product.findById(productId);
 
