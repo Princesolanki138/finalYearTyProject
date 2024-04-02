@@ -275,6 +275,7 @@ export const addToCartController = async (req, res) => {
       }
     }))
 
+    console.log(cartItems);
     // Calculate total cart item count
     cart.totalCartItem = cart.items.length;
 
