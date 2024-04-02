@@ -388,7 +388,7 @@ export const decreaseQuantityController = async (req, res) => {
 export const removeCartProductController = async (req, res) => {
   try {
     const { userId,productId } = req.body;
-    
+    const userId = req.user ? req.user._id : null;
 
     let product = await Product.findById(productId);
 
@@ -418,7 +418,9 @@ export const removeCartProductController = async (req, res) => {
     cart.totalCartValue = cart.items.reduce((total, item) => total + item.quantity * product.price, 0);
 
     // Save the updated cart
-    await cart.save();
+    await cart.save(productId);
+
+    console.log()
 
     res.status(200).json({ success: true, message: 'Product removed from cart successfully', cart: { _id: cart._id, items: cart.items, totalCartItem: cart.totalCartItem, totalCartValue: cart.totalCartValue } });
   } catch (error) {
