@@ -390,6 +390,9 @@ export const removeCartProductController = async (req, res) => {
     const { productId } = req.body;
     const userId = req.user ? req.user._id : null;
 
+    console.log( productId)
+    console.log( userId )
+
     let product = await Product.findById(productId);
 
     if (!userId) {
@@ -419,8 +422,6 @@ export const removeCartProductController = async (req, res) => {
 
     // Save the updated cart
     await cart.save();
-
-    console.log( productId)
 
     res.status(200).json({ success: true, message: 'Product removed from cart successfully', cart: { _id: cart._id, items: cart.items, totalCartItem: cart.totalCartItem, totalCartValue: cart.totalCartValue } });
   } catch (error) {
