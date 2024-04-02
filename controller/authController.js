@@ -277,10 +277,6 @@ export const addToCartController = async (req, res) => {
     }))
 
     console.log(cartItems);
-<<<<<<< HEAD
-
-=======
->>>>>>> 98389136e5c7cfee7a7e0dd4a806c695a44d7ce0
     // Calculate total cart item count
     cart.totalCartItem = cart.items.length;
 
@@ -395,8 +391,8 @@ export const removeCartProductController = async (req, res) => {
     const { productId } = req.body;
     const userId = req.user ? req.user._id : null;
 
-    console.log( productId)
-    console.log( userId )
+    console.log(productId)
+    console.log(userId)
 
     let product = await Product.findById(productId);
 
