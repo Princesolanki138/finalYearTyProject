@@ -414,16 +414,28 @@ export const removeCartProductController = async (req, res) => {
     cart.items.splice(itemIndex, 1);
 
 
+
+    // Save the updated cart
+    await cart.save();
+
     // Calculate total cart item count
     cart.totalCartItem = cart.items.length;
 
     // Calculate total cart value
     cart.totalCartValue = cart.items.reduce((total, item) => total + item.quantity * product.price, 0);
 
-    // Save the updated cart
-    await cart.save();
+    // fetch all product in cart items
+    const cartItems = await Promise.all(cart.items.map(async (item) => {
+      const productDetails = await Product.findById(item.product);
+      return {
+        ...item.toObject(),
+        product: productDetails
+      }
+    }))
 
-    res.status(200).json({ success: true, message: 'Product removed from cart successfully', cart: { _id: cart._id, items: cart.items, totalCartItem: cart.totalCartItem, totalCartValue: cart.totalCartValue } });
+    console.log(cartItems);
+
+    res.status(200).json({ success: true, message: 'Product removed from cart successfully', cart: { _id: cart._id, items: cartItems, totalCartItem: cart.totalCartItem, totalCartValue: cart.totalCartValue } });
   } catch (error) {
     console.error('Error removing product from cart:', error);
     res.status(500).json({ success: false, error, message: 'Error removing product from cart' });
