@@ -418,9 +418,9 @@ export const removeCartProductController = async (req, res) => {
     cart.totalCartValue = cart.items.reduce((total, item) => total + item.quantity * product.price, 0);
 
     // Save the updated cart
-    await cart.save(productId);
+    await cart.save();
 
-    console.log()
+    console.log( productId)
 
     res.status(200).json({ success: true, message: 'Product removed from cart successfully', cart: { _id: cart._id, items: cart.items, totalCartItem: cart.totalCartItem, totalCartValue: cart.totalCartValue } });
   } catch (error) {
