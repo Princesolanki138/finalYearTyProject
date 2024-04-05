@@ -92,14 +92,14 @@ export const loginController = async (req, res) => {
     // Fetch cart associated with the user
     const cart = await Cart.findOne({ user: user._id });
 
-    // fetch all product in cart items
-    const cartItems = await Promise.all(cart.items.map(async (item) => {
-      const productDetails = await Product.findById(item.product);
-      return {
-        ...item.toObject(),
-        product: productDetails
-      }
-    }))
+    // // fetch all product in cart items
+    // const cartItems = await Promise.all(cart.items.map(async (item) => {
+    //   const productDetails = await Product.findById(item.product);
+    //   return {
+    //     ...item.toObject(),
+    //     product: productDetails
+    //   }
+    // }))
 
     //token
     const token = await JWT.sign({ _id: user._id }, process.env.JWT_SECRET, {
@@ -128,7 +128,7 @@ export const loginController = async (req, res) => {
           country: address.country || "India",
         } : null
       },
-      cart: cartItems,
+      // cart: cartItems || null,
       token
     })
 
