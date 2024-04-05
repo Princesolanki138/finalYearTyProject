@@ -6,6 +6,8 @@ import connectDB from "./config/db.js";
 import authRoute from "./routes/authRoute.js";
 import categoryRoute from "./routes/categoryRoute.js";
 import productRoute from "./routes/productRoute.js";
+import compression from "compression";
+import status from "express-status-monitor";
 
 // Configure environment variables
 dotenv.config();
@@ -20,6 +22,12 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(morgan("dev"));
+app.use(compression({
+  level: 3,
+}));
+app.use(status({
+  path: '/api/v1/status',
+}))
 
 // Routes
 app.use("/api/v1/auth", authRoute);

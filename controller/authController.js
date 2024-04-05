@@ -40,11 +40,12 @@ export const registerController = async (req, res) => {
       // Save address ID in user's address array
     });
 
-    res.status(201).send({
-      success: true,
-      message: 'User registered successfully',
-      user: newUser,
-    });
+    res.status(201)
+      .send({
+        success: true,
+        message: 'User registered successfully',
+        user: newUser,
+      });
   } catch (error) {
     console.error('Error in registerController:', error);
     if (error.name === 'ValidationError') {
@@ -89,7 +90,16 @@ export const loginController = async (req, res) => {
     const address = await Address.findById(addressId);
 
     // Fetch cart associated with the user
-    // const cart = await Cart.findOne({ user: user._id });
+    const cart = await Cart.findOne({ user: user._id });
+
+    // fetch all product in cart items
+    const cartItems = await Promise.all(cart.items.map(async (item) => {
+      const productDetails = await Product.findById(item.product);
+      return {
+        ...item.toObject(),
+        product: productDetails
+      }
+    }))
 
     //token
     const token = await JWT.sign({ _id: user._id }, process.env.JWT_SECRET, {
@@ -118,10 +128,7 @@ export const loginController = async (req, res) => {
           country: address.country || "India",
         } : null
       },
-      // cart: {
-      //   CartId: cart ? cart._id : null,
-      //   Cartitems: cart ? cart.items : null,
-      // },
+      cart: cartItems,
       token
     })
 
@@ -276,7 +283,7 @@ export const addToCartController = async (req, res) => {
       }
     }))
 
-    console.log(cartItems);
+    // console.log(cartItems);
     // Calculate total cart item count
     cart.totalCartItem = cart.items.length;
 
@@ -414,7 +421,6 @@ export const removeCartProductController = async (req, res) => {
 
     // Remove the item from the cart
     cart.items.splice(itemIndex, 1);
-
 
 
     // Save the updated cart
