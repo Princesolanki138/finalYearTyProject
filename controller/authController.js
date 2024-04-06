@@ -89,17 +89,24 @@ export const loginController = async (req, res) => {
     const addressId = user.address[0]; // Assuming address ID is at index 0
     const address = await Address.findById(addressId);
 
-    // Fetch cart associated with the user
-    const cart = await Cart.findOne({ user: user._id });
-
     // // fetch all product in cart items
-    // const cartItems = await Promise.all(cart.items.map(async (item) => {
-    //   const productDetails = await Product.findById(item.product);
-    //   return {
-    //     ...item.toObject(),
-    //     product: productDetails
-    //   }
-    // }))
+    let cartItems = [];
+    const cart = await Cart.findOne({ user: user._id });
+    if (cart && cart.items && cart.items.length > 0) {
+      cartItems = await Promise.all(cart.items.map(async (item) => {
+        const productDetails = await Product.findById(item.product);
+        if (productDetails) {
+          return {
+            ...item.toObject(),
+            product: productDetails
+          };
+        } else {
+          console.log(`Product not found for item: ${item.product}`);
+          return null; // Handle missing product case
+        }
+      }));
+      cartItems = cartItems.filter(item => item !== null); // Filter out null values
+    }
 
     //token
     const token = await JWT.sign({ _id: user._id }, process.env.JWT_SECRET, {
@@ -128,7 +135,7 @@ export const loginController = async (req, res) => {
           country: address.country || "India",
         } : null
       },
-      // cart: cartItems || null
+      cartItems,
       token
     })
 
