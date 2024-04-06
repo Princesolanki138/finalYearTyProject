@@ -456,3 +456,45 @@ export const removeCartProductController = async (req, res) => {
     res.status(500).json({ success: false, error, message: 'Error removing product from cart' });
   }
 }
+
+
+export const getAllUserController = async (req, res) => {
+  try {
+    const users = await User.find();
+    res.status(200).send({
+      success: true,
+      message: 'Users fetched successfully',
+      users,
+    })
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({
+      success: false,
+      error,
+      message: 'Error in fetching all users',
+    })
+
+  }
+}
+
+// delete user 
+export const deleteUserController = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const user = await User.findByIdAndDelete(userId);
+    res.status(200).send({
+      success: true,
+      message: 'User deleted successfully',
+      user,
+    })
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({
+      success: false,
+      error,
+      message: 'Error in deleting user',
+    })
+  }
+}

@@ -30,14 +30,12 @@ const userSchema = new mongoose.Schema({
     type: Date,
   },
   wishlist: {
-    type: [mongoose.Schema.Types.ObjectId], // Assuming wishlist items are references to products
-    ref: 'cart', // Reference to the Product model
-    default: []
+    type: [mongoose.Schema.Types.ObjectId],
+    ref: 'product',
   },
   orders: {
-    type: [mongoose.Schema.Types.ObjectId], // Assuming orders are references to order documents
-    ref: 'Order', // Reference to the Order model
-    default: []
+    type: [mongoose.Schema.Types.ObjectId],
+    ref: 'Order',
   },
 }, { timestamps: true });
 

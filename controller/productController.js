@@ -1,8 +1,7 @@
 import productModel from "../models/productModel.js";
 import { uploadCloudinary, } from "../utils/cloudinaryConfig.js"
-
 import slugify from "slugify";
-import fs from "fs";
+
 
 // create products
 import Product from "../models/productModel.js";
@@ -141,7 +140,7 @@ export const getSingleProductController = async (req, res) => {
     });
   }
 }
-//get images
+//get images (this is optional api )
 export const productPhotoController = async (req, res) => {
   try {
     const product = await productModel.findById(req.params.pid).select("images");

@@ -6,6 +6,7 @@ import connectDB from "./config/db.js";
 import authRoute from "./routes/authRoute.js";
 import categoryRoute from "./routes/categoryRoute.js";
 import productRoute from "./routes/productRoute.js";
+import adminRoutes from "./routes/adminRoutes.js"
 import compression from "compression";
 import status from "express-status-monitor";
 
@@ -33,6 +34,7 @@ app.use(status({
 app.use("/api/v1/auth", authRoute);
 app.use("/api/v1/category", categoryRoute);
 app.use("/api/v1/product", productRoute);
+app.use("/api/v1/admin", adminRoutes);
 
 // CORS headers for all routes
 app.use((req, res, next) => {
