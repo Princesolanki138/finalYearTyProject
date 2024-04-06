@@ -4,6 +4,7 @@ import User from "../models/userModel.js"
 import Address from "../models/addressModel.js"
 import Cart from "../models/cartModel.js"
 import Product from "../models/productModel.js"
+import Category from "../models/categoryModel.js"
 
 
 //register controller
@@ -496,5 +497,25 @@ export const deleteUserController = async (req, res) => {
       error,
       message: 'Error in deleting user',
     })
+  }
+}
+
+
+// total count of user , product , category
+export const totalCountAllController = async (req, res) => {
+  try {
+    const totalUser = await User.countDocuments();
+    const totalProduct = await Product.countDocuments();
+    const totalCategory = await Category.countDocuments();
+    res.status(200).send({
+      success: true,
+      message: 'Total count fetched successfully',
+      customer: totalUser,
+      total_Product: totalProduct,
+      total_category: totalCategory
+    })
+
+  } catch (error) {
+
   }
 }
