@@ -23,6 +23,8 @@ export const createProductController = async (req, res) => {
       strapColor,
     } = req.body;
 
+    console.log("req.body", req.body)
+
     console.log("imagesLocalPaths", req.files.images)
     // Check if any files were uploaded
     if (!req.files || !req.files.images || req.files.images.length === 0) {
@@ -39,6 +41,8 @@ export const createProductController = async (req, res) => {
       console.error("Error uploading images:", uploadError);
       return res.status(500).json({ error: "Error uploading images" });
     }
+
+    console.log(imagesUrls)
 
     // Validate required fields
     const requiredFields = { name, brand, mrp, price, modelno, category, gender, warranty, country_of_origin, description, dialcolor, strapColor };
@@ -72,6 +76,7 @@ export const createProductController = async (req, res) => {
       slug: slugify(name),
     });
 
+    console.log(product)
     // Save the product to the database
     await product.save();
 
@@ -308,6 +313,12 @@ export const searchProductController = async (req, res) => {
       { brand: { $regex: query, $options: "i" } },
       ]
     })
+
+    if (products.length < 1) {
+      return res.status(404).json({
+        error: "Porduct Not Found"
+      })
+    }
 
     res.status(200).send({
       success: true,

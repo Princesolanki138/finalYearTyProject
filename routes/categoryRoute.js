@@ -6,8 +6,8 @@ const router = express.Router();
 
 router.post("/createCategory", requireSignIn, isAdmin, createCategoryController);
 
-router.get("/get-category", requireSignIn, isAdmin, categoryController);
+router.get("/get-category", categoryController);
 
-router.get("/single-category/:slug", requireSignIn, isAdmin, singleCategoryController);
+router.get("/single-category/:slug", singleCategoryController);
 
 export default router

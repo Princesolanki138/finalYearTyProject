@@ -115,30 +115,32 @@ export const loginController = async (req, res) => {
     });
     // console.log(token)
 
-    res.status(200).send({
-      success: true,
-      message: "login successfully",
-      user: {
-        _id: user._id || null,
-        name: user.name || null,
-        email: user.email || null,
-        phone: user.phone || null,
-        gender: user.gender || null,
-        dob: user.dob || null,
-        address: address ? {
-          id: address._id,
-          Area: address.Area || null,
-          pincode: address.pincode || null,
-          landmark: address.landmark || null,
-          state: address.state || null,
-          street: address.street || null,
-          city: address.city || null,
-          country: address.country || "India",
-        } : null
-      },
-      cartItems,
-      token
-    })
+    res.status(200)
+      .set('Content-Transfer-Encoding', 'application/gzip')
+      .send({
+        success: true,
+        message: "login successfully",
+        user: {
+          _id: user._id || null,
+          name: user.name || null,
+          email: user.email || null,
+          phone: user.phone || null,
+          gender: user.gender || null,
+          dob: user.dob || null,
+          address: address ? {
+            id: address._id,
+            Area: address.Area || null,
+            pincode: address.pincode || null,
+            landmark: address.landmark || null,
+            state: address.state || null,
+            street: address.street || null,
+            city: address.city || null,
+            country: address.country || "India",
+          } : null
+        },
+        cartItems,
+        token
+      })
 
   } catch (error) {
     console.log(error)

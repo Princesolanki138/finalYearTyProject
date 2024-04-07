@@ -7,6 +7,7 @@ const router = express.Router()
 
 router.post("/register", admintRegisterController)
 
+// /api/v1/admin/AdminLogin
 router.post("/AdminLogin", adminLoginController)
 
 router.get("/all-users", requireSignIn, isAdmin, getAllUserController)
