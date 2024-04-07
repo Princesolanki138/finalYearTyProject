@@ -11,7 +11,8 @@ router.post("/create-product",
     { name: "images", maxCount: 4 },
   ]),
   requireSignIn,
-  createProductController
+  isAdmin,
+  createProductController,
 );
 
 //get all products
