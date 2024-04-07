@@ -16,10 +16,10 @@ router.post("/create-product",
 );
 
 //get all products
-router.get("/get-product", requireSignIn, getProductController)
+router.get("/get-product", getProductController)
 
 //get single product
-router.get("/get-single-product/:slug", requireSignIn, getSingleProductController)
+router.get("/get-single-product/:slug", getSingleProductController)
 
 //get images optional do not use this api
 router.get("/get-product-images/:pid", productPhotoController)
