@@ -109,6 +109,9 @@ export const loginController = async (req, res) => {
       cartItems = cartItems.filter(item => item !== null); // Filter out null values
     }
 
+    const cartvalue = cart.items.length < 1 ? 0 : cart.items.length
+    const totalCartPrice = cartItems.reduce((total, item) => total + (item.product.price * item.quantity), 0);
+
     //token
     const token = await JWT.sign({ _id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "7d",
@@ -139,6 +142,8 @@ export const loginController = async (req, res) => {
           } : null
         },
         cartItems,
+        cartvalue,
+        totalCartPrice,
         token
       })
 
@@ -281,8 +286,6 @@ export const addToCartController = async (req, res) => {
       cart.items.push({ product: productId, quantity: parsedQuantity });
     }
 
-    // Save the updated cart
-    await cart.save();
 
     // fetch all product in cart items
     const cartItems = await Promise.all(cart.items.map(async (item) => {
@@ -299,6 +302,9 @@ export const addToCartController = async (req, res) => {
 
     // Calculate total cart value
     cart.totalCartValue = cart.items.reduce((total, item) => total + item.quantity * product.price, 0);
+
+    // Save the updated cart
+    await cart.save();
 
     res.status(200).json({ success: true, message: 'Product added to cart successfully', cart: { _id: cart._id, items: cartItems }, totalCartItem: cart.totalCartItem, totalCartValue: cart.totalCartValue });
   } catch (error) {
@@ -521,3 +527,51 @@ export const totalCountAllController = async (req, res) => {
 
   }
 }
+
+// // get cart item of user login
+
+// export const getCartController = async (req, res) => {
+//   try {
+//     const userId = req.user._id;
+//     let cart = await Cart.findOne({ user: userId });
+//     const productId = cart.items.product;
+//     let product = await Product.findById({ productId: cart.items.product });
+
+
+//     // fetch all product in cart items
+//     const cartItems = await Promise.all(cart.items.map(async (item) => {
+//       const productDetails = await Product.findById(item.product);
+//       return {
+//         ...item.toObject(),
+//         product: productDetails
+//       }
+//     }))
+//     // if cart is emty
+//     if (cartItems.length < 1) {
+
+//       return res.status(200).send({
+//         success: true,
+//         message: 'Cart fetched successfully',
+//         cart: { _id: cart._id, items: [], totalCartItem: 0, totalCartValue: 0 },
+//       })
+//     }
+
+//     const totalCartItem = cartItems.length;
+
+//     cart.totalCartValue = cart.items.reduce((total, item) => total + item.quantity * product.price, 0);
+
+//     res.status(200).send({
+//       success: true,
+//       message: 'Cart fetched successfully',
+//       cart: { _id: cart._id, items: cartItems, totalCartItem, totalCartValue: cart.totalCartValue },
+//     })
+
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).send({
+//       success: false,
+//       error,
+//       message: 'Error in fetching cart',
+//     })
+//   }
+// }
