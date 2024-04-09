@@ -528,50 +528,46 @@ export const totalCountAllController = async (req, res) => {
   }
 }
 
-// // get cart item of user login
+// get cart item of user login
 
-// export const getCartController = async (req, res) => {
-//   try {
-//     const userId = req.user._id;
-//     let cart = await Cart.findOne({ user: userId });
-//     const productId = cart.items.product;
-//     let product = await Product.findById({ productId: cart.items.product });
+export const getCartController = async (req, res) => {
+  try {
+    let userId = req.user._id;
+    let cart = await Cart.findOne({ user: userId });
 
+    if (!cart || !cart.items || cart.items.length === 0) {
+      res.status(200).send({
+        success: true,
+        message: 'Cart is empty',
+        cart: { items: [], totalCartItem: 0, totalCartValue: 0 },
+      })
+    }
+    else {
+      // fetch all product in cart items
+      const cartItems = await Promise.all(cart.items.map(async (item) => {
+        const productDetails = await Product.findById(item.product);
+        return {
+          ...item.toObject(),
+          product: productDetails
+        }
+      }))
 
-//     // fetch all product in cart items
-//     const cartItems = await Promise.all(cart.items.map(async (item) => {
-//       const productDetails = await Product.findById(item.product);
-//       return {
-//         ...item.toObject(),
-//         product: productDetails
-//       }
-//     }))
-//     // if cart is emty
-//     if (cartItems.length < 1) {
+      const totalCartItem = cartItems.length;
 
-//       return res.status(200).send({
-//         success: true,
-//         message: 'Cart fetched successfully',
-//         cart: { _id: cart._id, items: [], totalCartItem: 0, totalCartValue: 0 },
-//       })
-//     }
+      cart.totalCartValue = cart.items.reduce((total, item) => total + item.quantity * item.product.price, 0);
 
-//     const totalCartItem = cartItems.length;
-
-//     cart.totalCartValue = cart.items.reduce((total, item) => total + item.quantity * product.price, 0);
-
-//     res.status(200).send({
-//       success: true,
-//       message: 'Cart fetched successfully',
-//       cart: { _id: cart._id, items: cartItems, totalCartItem, totalCartValue: cart.totalCartValue },
-//     })
-
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).send({
-//       success: false,
-//       error,
-//       message: 'Error in fetching cart',
-//     })
-//   }
-// }
+      res.status(200).send({
+        success: true,
+        message: 'Cart fetched successfully',
+        cart: { _id: cart._id, items: cartItems, totalCartItem, totalCartValue: cart.totalCartValue },
+      })
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({
+      success: false,
+      error,
+      message: 'Error in fetching cart',
+    })
+  }
+}
