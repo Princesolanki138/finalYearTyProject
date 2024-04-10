@@ -93,60 +93,64 @@ export const loginController = async (req, res) => {
     // // fetch all product in cart items
     let cartItems = [];
     const cart = await Cart.findOne({ user: user._id });
-    if (cart && cart.items && cart.items.length > 0) {
-      cartItems = await Promise.all(cart.items.map(async (item) => {
-        const productDetails = await Product.findById(item.product);
-        if (productDetails) {
-          return {
-            ...item.toObject(),
-            product: productDetails
-          };
-        } else {
-          console.log(`Product not found for item: ${item.product}`);
-          return null; // Handle missing product case
-        }
-      }));
-      cartItems = cartItems.filter(item => item !== null); // Filter out null values
-    }
-
-    const cartvalue = cart.items.length < 1 ? 0 : cart.items.length
-    const totalCartPrice = cartItems.reduce((total, item) => total + (item.product.price * item.quantity), 0);
-
-    //token
-    const token = await JWT.sign({ _id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "7d",
-    });
-    // console.log(token)
-
-    res.status(200)
-      .set('Content-Transfer-Encoding', 'application/gzip')
-      .send({
+    if (!cart || !cart.items || cart.items.length === 0) {
+      res.status(200).send({
         success: true,
-        message: "login successfully",
-        user: {
-          _id: user._id || null,
-          name: user.name || null,
-          email: user.email || null,
-          phone: user.phone || null,
-          gender: user.gender || null,
-          dob: user.dob || null,
-          address: address ? {
-            id: address._id,
-            Area: address.Area || null,
-            pincode: address.pincode || null,
-            landmark: address.landmark || null,
-            state: address.state || null,
-            street: address.street || null,
-            city: address.city || null,
-            country: address.country || "India",
-          } : null
-        },
-        cartItems,
-        cartvalue,
-        totalCartPrice,
-        token
+        message: 'Cart is empty',
+        cart: { items: [], totalCartItem: 0, totalCartValue: 0 },
       })
+    }
+    else {
 
+      const cartItems = await Promise.all(cart.items.map(async (item) => {
+        const productDetails = await Product.findById(item.product);
+        return {
+          ...item.toObject(),
+          product: productDetails
+        }
+      }))
+
+      const totalCartItem = cartItems.length;
+
+      cart.totalCartValue = cart.items.reduce((total, item) => total + item.quantity * item.product.price, 0);
+
+
+
+      //token
+      const token = await JWT.sign({ _id: user._id }, process.env.JWT_SECRET, {
+        expiresIn: "7d",
+      });
+      // console.log(token)
+
+      res.status(200)
+        .set('Content-Transfer-Encoding', 'application/gzip')
+        .send({
+          success: true,
+          message: "login successfully",
+          user: {
+            _id: user._id || null,
+            name: user.name || null,
+            email: user.email || null,
+            phone: user.phone || null,
+            gender: user.gender || null,
+            dob: user.dob || null,
+            address: address ? {
+              id: address._id,
+              Area: address.Area || null,
+              pincode: address.pincode || null,
+              landmark: address.landmark || null,
+              state: address.state || null,
+              street: address.street || null,
+              city: address.city || null,
+              country: address.country || "India",
+            } : null
+          },
+          cartItems,
+          totalCartItem,
+          totalCartValue: cart.totalCartValue,
+          token
+        })
+    }
   } catch (error) {
     console.log(error)
     res.status(500).send({
