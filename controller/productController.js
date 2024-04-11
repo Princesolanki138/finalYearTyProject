@@ -25,7 +25,6 @@ export const createProductController = async (req, res) => {
 
     console.log("req.body", req.body)
 
-    console.log("imagesLocalPaths", req.files.images)
     // Check if any files were uploaded
     if (!req.files || !req.files.images || req.files.images.length === 0) {
       return res.status(400).json({ error: "No images uploaded" });
@@ -45,12 +44,12 @@ export const createProductController = async (req, res) => {
     console.log(imagesUrls)
 
     // Validate required fields
-    const requiredFields = { name, brand, mrp, price, modelno, category, gender, warranty, country_of_origin, description, dialcolor, strapColor };
-    for (const [key, value] of Object.entries(requiredFields)) {
-      if (!value) {
-        return res.status(400).json({ error: `${key} is required` });
-      }
-    }
+    // const requiredFields = { name, brand, mrp, price, modelno, category, gender, warranty, country_of_origin, description, dialcolor, strapColor };
+    // for (const [key, value] of Object.entries(requiredFields)) {
+    //   if (!value) {
+    //     return res.status(400).json({ error: `${key} is required` });
+    //   }
+    // }
 
     // Validate dialcolor and strapColor arrays
     if (!Array.isArray(dialcolor) || dialcolor.length === 0 || !Array.isArray(strapColor) || strapColor.length === 0) {
