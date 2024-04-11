@@ -52,10 +52,9 @@ export const createProductController = async (req, res) => {
     // }
 
     // Validate dialcolor and strapColor arrays
-    if (!Array.isArray(dialcolor) || dialcolor.length === 0 || !Array.isArray(strapColor) || strapColor.length === 0) {
-      return res.status(400).json({ error: "Dialcolor and strapColor must be non-empty arrays" });
-    }
-
+    // if (!Array.isArray(dialcolor) || dialcolor.length === 0 || !Array.isArray(strapColor) || strapColor.length === 0) {
+    //   return res.status(400).json({ error: "Dialcolor and strapColor must be non-empty arrays" });
+    // }
 
     // Create a new product instance
     const product = new Product({
