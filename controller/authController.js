@@ -90,15 +90,39 @@ export const loginController = async (req, res) => {
     const addressId = user.address[0]; // Assuming address ID is at index 0
     const address = await Address.findById(addressId);
 
+    const token = await JWT.sign({ _id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
+
     // // fetch all product in cart items
-    let cartItems = [];
     const cart = await Cart.findOne({ user: user._id });
     if (!cart || !cart.items || cart.items.length === 0) {
-      res.status(200).send({
-        success: true,
-        message: 'Cart is empty',
-        cart: { items: [], totalCartItem: 0, totalCartValue: 0 },
-      })
+      res.status(200)
+        .set('Content-Transfer-Encoding', 'application/gzip')
+        .send({
+          success: true,
+          message: 'login successfully',
+          user: {
+            _id: user._id || null,
+            name: user.name || null,
+            email: user.email || null,
+            phone: user.phone || null,
+            gender: user.gender || null,
+            dob: user.dob || null,
+            address: address ? {
+              id: address._id,
+              Area: address.Area || null,
+              pincode: address.pincode || null,
+              landmark: address.landmark || null,
+              state: address.state || null,
+              street: address.street || null,
+              city: address.city || null,
+              country: address.country || "India",
+            } : null
+          },
+          cart: { items: [], totalCartItem: 0, totalCartValue: 0 },
+          token
+        })
     }
     else {
 
@@ -114,12 +138,6 @@ export const loginController = async (req, res) => {
 
       cart.totalCartValue = cart.items.reduce((total, item) => total + item.quantity * item.product.price, 0);
 
-
-
-      //token
-      const token = await JWT.sign({ _id: user._id }, process.env.JWT_SECRET, {
-        expiresIn: "7d",
-      });
       // console.log(token)
 
       res.status(200)
