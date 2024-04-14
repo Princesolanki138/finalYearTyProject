@@ -37,6 +37,10 @@ const userSchema = new mongoose.Schema({
     type: [mongoose.Schema.Types.ObjectId],
     ref: 'Order',
   },
+ otp: {
+      type: Number, // otp for forget password
+    },
+  
 }, { timestamps: true });
 
 
