@@ -442,19 +442,19 @@ export const removeCartProductController = async (req, res) => {
     let product = await Product.findById(productId);
 
     if (!userId) {
-      return res.status(401).json({ success: false, message: 'User not authenticated' });
+      return res.status(401).send({ success: false, message: 'User not authenticated' });
     }
 
     let cart = await Cart.findOne({ user: userId });
 
     if (!cart) {
-      return res.status(404).json({ success: false, message: 'Cart not found' });
+      return res.status(404).send({ success: false, message: 'Cart not found' });
     }
 
     const itemIndex = cart.items.findIndex(item => item.product.toString() === productId);
 
     if (itemIndex === -1) {
-      return res.status(404).json({ success: false, message: 'Product not found in cart' });
+      return res.status(404).send({ success: false, message: 'Product not found in cart' });
     }
 
     // Remove the item from the cart
@@ -481,10 +481,10 @@ export const removeCartProductController = async (req, res) => {
 
     console.log(cartItems);
 
-    res.status(200).json({ success: true, message: 'Product removed from cart successfully', cart: { _id: cart._id, items: cartItems, totalCartItem: cart.totalCartItem, totalCartValue: cart.totalCartValue } });
+    res.status(200).send({ success: true, message: 'Product removed from cart successfully', cart: { _id: cart._id, items: cartItems, totalCartItem: cart.totalCartItem, totalCartValue: cart.totalCartValue } });
   } catch (error) {
     console.error('Error removing product from cart:', error);
-    res.status(500).json({ success: false, error, message: 'Error removing product from cart' });
+    res.status(500).send({ success: false, error, message: 'Error removing product from cart' });
   }
 }
 
