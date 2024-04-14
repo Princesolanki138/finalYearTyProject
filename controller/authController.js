@@ -1,4 +1,5 @@
 import JWT from "jsonwebtoken"
+import nodemailer from "nodemailer"
 import { comparePassd, hashPassword } from "../helpers/authHelper.js"
 import User from "../models/userModel.js"
 import Address from "../models/addressModel.js"
@@ -179,6 +180,112 @@ export const loginController = async (req, res) => {
   }
 }
 
+
+export const ForgetPasssword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    console.log(email);
+    // console.log(email);
+    const existingUser = await User.findOne({ email }).populate("address");
+    // console.log(existingUser);
+    // return res.send(existingUser);
+    if (!existingUser) {
+      return res.status(400).send({ message: "User is not register" });
+    } else {
+      const UniqueOtp = Math.floor(100000 + Math.random() * 900000); // 6-digit OTP
+
+      const transporter = nodemailer.createTransport({
+        // host: "smtp.ethereal.email",
+        service: "Gmail",
+        // port: 465,
+        // secure: true, // Use `true` for port 465, `false` for all other ports
+        auth: {
+          user: "goodtimes4info@gmail.com",
+          pass: "pabnwuosocqvmwfg",
+        },
+      });
+      async function main() {
+        const info = await transporter.sendMail({
+          from: '"GoodTimes" goodtimes4info@gmail.com', // sender address
+          to: email, // list of receivers
+          subject: "Hello ✔", // Subject line
+          text: `OTP for Forget Password ${UniqueOtp}`, // plain text body
+          // html: "<b>Hello world?</b>", // html body
+        });
+        console.log("Message sent: %s", info.messageId);
+        // Message sent: <d786aa62-4e0a-070a-47ed-0b0666549519@ethereal.email>
+      }
+      main();
+      console.log(existingUser);
+      const userss = await User.findByIdAndUpdate(existingUser._id, {
+        otp: UniqueOtp,
+      });
+
+      console.log(userss);
+      return res.status(200).send({
+        success: true,
+        message: "OTP sent sucessfully to your register email id",
+        // data: userss,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    return res.send({ error });
+  }
+};
+
+export const ForgetPassswordOtpChecked = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+
+    const userr = await User.findOne({ email });
+    console.log(userr);
+    if (userr.otp === otp) {
+      return res.status(200).json({
+        success: true,
+        message: "OTP is verified",
+      });
+    } else {
+      return res.status(401).json({
+        success: false,
+        message: "Wrong OTP. Please Verify and try again",
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send(error);
+  }
+};
+
+export const resetPassword = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) {
+      res.status(404).send({
+        success: true,
+        message: "user not found",
+      });
+    }
+
+    const newPassword = await hashPassword(password);
+    const newuser = await User.findByIdAndUpdate(
+      user._id,
+      {
+        password: newPassword,
+      },
+      { new: true }
+    );
+    // const matchPass = await comparePassd(password, user.password);
+    res.status(200).send({
+      success: true,
+      message: "Password Change Successfully",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(error);
+  }
+};
 
 
 export const testController = async (req, res) => {
