@@ -1,5 +1,7 @@
 import express from "express";
-import { addToCartController, decreaseQuantityController, getCartController, getUserController, increaseQuantityController, loginController, registerController, removeCartProductController, testController, updateProfile }
+import {  resetPassword,
+  ForgetPasssword,
+  ForgetPassswordOtpChecked, addToCartController, decreaseQuantityController, getCartController, getUserController, increaseQuantityController, loginController, registerController, removeCartProductController, testController, updateProfile }
   from "../controller/authController.js";
 import requireSignIn from "../middleware/authMiddleware.js"
 import { searchProductController } from "../controller/productController.js";
@@ -25,6 +27,15 @@ router.put("/update-user", requireSignIn, updateProfile);
 
 //get user profile
 router.get("/profile", requireSignIn, getUserController);
+
+//this api sent otp to the user register email address
+router.post("/forget-password", ForgetPasssword);
+
+//and this api verify that user enter OTP
+router.post("/forget-password-otp-check", ForgetPassswordOtpChecked);
+
+// After verify user can change password
+router.put("/reset-password", resetPassword);
 
 router.post("/add-to-cart", requireSignIn, addToCartController)
 
