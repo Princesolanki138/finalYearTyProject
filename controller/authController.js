@@ -309,6 +309,33 @@ export const addToCartController = async (req, res) => {
     }
 
 
+
+    // console.log(cartItems);
+    // Calculate total cart item count
+    cart.totalCartItem = cart.items.length;
+
+    // Calculate total cart value based on updated cart items
+    let totalCartValue = 0;
+
+    // Iterate through each item in the cart to calculate total value
+    for (const item of cart.items) {
+      // Find the corresponding product details
+      const productDetails = await Product.findById(item.product);
+
+      if (productDetails) {
+        // Calculate the total value of this item (quantity * price)
+        const itemTotalValue = item.quantity * productDetails.price;
+        totalCartValue += itemTotalValue;
+      }
+    }
+
+    // Update the cart's totalCartValue property
+    cart.totalCartValue = totalCartValue;
+
+
+    // Save the updated cart
+    await cart.save();
+
     // fetch all product in cart items
     const cartItems = await Promise.all(cart.items.map(async (item) => {
       const productDetails = await Product.findById(item.product);
@@ -318,15 +345,6 @@ export const addToCartController = async (req, res) => {
       }
     }))
 
-    // console.log(cartItems);
-    // Calculate total cart item count
-    cart.totalCartItem = cart.items.length;
-
-    // Calculate total cart value
-    cart.totalCartValue = cart.items.reduce((total, item) => total + item.quantity * product.price, 0);
-
-    // Save the updated cart
-    await cart.save();
 
     res.status(200).json({ success: true, message: 'Product added to cart successfully', cart: { _id: cart._id, items: cartItems }, totalCartItem: cart.totalCartItem, totalCartValue: cart.totalCartValue });
   } catch (error) {
@@ -348,7 +366,6 @@ export const increaseQuantityController = async (req, res) => {
     }
 
     let cart = await Cart.findOne({ user: userId })
-    let product = await Product.findById(productId);
 
     console.log('productId:', productId, 'userId:', userId);
     if (!cart) {
@@ -370,13 +387,37 @@ export const increaseQuantityController = async (req, res) => {
     // Calculate total cart item count
     cart.totalCartItem = cart.items.length;
 
-    // Calculate total cart value
-    cart.totalCartValue = cart.items.reduce((total, item) => total + item.quantity * product.price, 0);
+    // Calculate total cart value based on updated cart items
+    let totalCartValue = 0;
+
+    // Iterate through each item in the cart to calculate total value
+    for (const item of cart.items) {
+      // Find the corresponding product details
+      const productDetails = await Product.findById(item.product);
+
+      if (productDetails) {
+        // Calculate the total value of this item (quantity * price)
+        const itemTotalValue = item.quantity * productDetails.price;
+        totalCartValue += itemTotalValue;
+      }
+    }
+
+    // Update the cart's totalCartValue property
+    cart.totalCartValue = totalCartValue;
+
 
     // Save the updated cart
     await cart.save();
+    // fetch all product in cart items
+    const cartItems = await Promise.all(cart.items.map(async (item) => {
+      const productDetails = await Product.findById(item.product);
+      return {
+        ...item.toObject(),
+        product: productDetails
+      }
+    }))
 
-    res.status(200).json({ success: true, message: 'Quantity increased successfully', cart: { _id: cart._id, items: cart.items } });
+    res.status(200).json({ success: true, message: 'Quantity increased successfully', cart: { _id: cart._id, items: cartItems }, totalCartItem: cart.totalCartItem, totalCartValue: cart.totalCartValue });
   } catch (error) {
     console.error('Error increasing quantity:', error);
     res.status(500).json({ success: false, error, message: 'Error increasing quantity' });
@@ -417,13 +458,37 @@ export const decreaseQuantityController = async (req, res) => {
     // Calculate total cart item count
     cart.totalCartItem = cart.items.length;
 
-    // Calculate total cart value
-    cart.totalCartValue = cart.items.reduce((total, item) => total + item.quantity * product.price, 0);
+    // Calculate total cart value based on updated cart items
+    let totalCartValue = 0;
+
+    // Iterate through each item in the cart to calculate total value
+    for (const item of cart.items) {
+      // Find the corresponding product details
+      const productDetails = await Product.findById(item.product);
+
+      if (productDetails) {
+        // Calculate the total value of this item (quantity * price)
+        const itemTotalValue = item.quantity * productDetails.price;
+        totalCartValue += itemTotalValue;
+      }
+    }
+
+    // Update the cart's totalCartValue property
+    cart.totalCartValue = totalCartValue;
 
     // Save the updated cart
     await cart.save();
 
-    res.status(200).json({ success: true, message: 'Quantity decreased successfully', cart: { _id: cart._id, items: cart.items } });
+    // fetch all product in cart items
+    const cartItems = await Promise.all(cart.items.map(async (item) => {
+      const productDetails = await Product.findById(item.product);
+      return {
+        ...item.toObject(),
+        product: productDetails
+      }
+    }))
+
+    res.status(200).json({ success: true, message: 'Quantity decreased successfully', cart: { _id: cart._id, items: cartItems }, totalCartItem: cart.totalCartItem, totalCartValue: cart.totalCartValue });
   } catch (error) {
     console.error('Error decreasing quantity:', error);
     res.status(500).json({ success: false, error, message: 'Error decreasing quantity' });
@@ -434,7 +499,7 @@ export const decreaseQuantityController = async (req, res) => {
 export const removeCartProductController = async (req, res) => {
   try {
     const { productId } = req.body;
-    const userId = req.user ? req.user._id : null;
+    const userId = req.user._id
 
     console.log(productId)
     console.log(userId)
