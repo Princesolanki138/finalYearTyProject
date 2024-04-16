@@ -11,6 +11,7 @@ export const createOrder = async (req, res) => {
     console.log(razorpay_payment_id)
 
     const cart = await cartModel.findOne({ _id: cartId, user: userId }).populate('items.product')
+    console.log(cart)
 
     console.log(cart)
 
