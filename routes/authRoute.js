@@ -1,10 +1,13 @@
 import express from "express";
-import {  resetPassword,
+import {
+  resetPassword,
   ForgetPasssword,
-  ForgetPassswordOtpChecked, addToCartController, decreaseQuantityController, getCartController, getUserController, increaseQuantityController, loginController, registerController, removeCartProductController, testController, updateProfile }
+  ForgetPassswordOtpChecked, addToCartController, decreaseQuantityController, getCartController, getUserController, increaseQuantityController, loginController, registerController, removeCartProductController, testController, updateProfile
+}
   from "../controller/authController.js";
 import requireSignIn from "../middleware/authMiddleware.js"
 import { searchProductController } from "../controller/productController.js";
+import { createOrder } from "../controller/orderController.js";
 
 
 const router = express.Router();
@@ -48,6 +51,11 @@ router.post('/remove-from-cart', requireSignIn, removeCartProductController);
 router.get("/all-items", requireSignIn, getCartController);
 
 router.get("/search", requireSignIn, searchProductController);
+
+// order routes
+
+router.post("/create-order", requireSignIn, createOrder);
+
 
 
 export default router;
