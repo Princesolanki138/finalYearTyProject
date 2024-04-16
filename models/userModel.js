@@ -29,18 +29,18 @@ const userSchema = new mongoose.Schema({
   dob: {
     type: Date,
   },
-  wishlist: {
-    type: [mongoose.Schema.Types.ObjectId],
-    ref: 'product',
+  // wishlist: {
+  //   type: [mongoose.Schema.Types.ObjectId],
+  //   ref: 'product',
+  // },
+  // orders: {
+  //   type: [mongoose.Schema.Types.ObjectId],
+  //   ref: 'Order',
+  // },
+  otp: {
+    type: Number, // otp for forget password
   },
-  orders: {
-    type: [mongoose.Schema.Types.ObjectId],
-    ref: 'Order',
-  },
- otp: {
-      type: Number, // otp for forget password
-    },
-  
+
 }, { timestamps: true });
 
 

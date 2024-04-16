@@ -12,8 +12,13 @@ export const createOrder = async (req, res) => {
 
     const cart = await cartModel.findOne({ _id: cartId, user: userId }).populate('items.product')
 
+    console.log(cart)
+
     if (!cart) {
       return res.status(404).send({ success: false, message: 'Cart not found' });
+    }
+    if (cart.totalCartItem === 0) {
+      return res.status(404).send({ success: false, message: 'Cart is empty' });
     }
 
     //calculate total price
@@ -40,12 +45,13 @@ export const createOrder = async (req, res) => {
     const savedOrder = await newOrder.save();
 
     //  Clear cart items after order creation
-    // cart.items = [];
-    // cart.totalCartItem = 0;
-    // cart.totalCartValue = 0;
-    // await cart.save();
+    cart.items = []
+    cart.totalCartItem = 0
+    cart.totalCartValue = 0
 
-    res.status(200).send({ success: true, message: 'Order created successfully', order: savedOrder });
+    await cart.save();
+
+    res.status(201).send({ success: true, message: 'Order created successfully', order: savedOrder, updatedCart: { _id: cart._id, items: cart.items, totalCartItem: cart.totalCartItem, totalCartValue: cart.totalCartValue } });
 
   } catch (error) {
     console.error('Error creating order:', error);
