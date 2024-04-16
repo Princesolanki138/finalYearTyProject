@@ -164,6 +164,7 @@ export const loginController = async (req, res) => {
               country: address.country || "India",
             } : null
           },
+          cartId: cart._id,
           cartItems,
           totalCartItem,
           totalCartValue: cart.totalCartValue,
