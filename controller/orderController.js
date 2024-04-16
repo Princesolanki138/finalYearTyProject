@@ -6,6 +6,9 @@ export const createOrder = async (req, res) => {
     const { cartId, razorpay_order_id, razorpay_payment_id } = req.body
     const userId = req.user._id
     console.log(userId)
+    console.log(cartId)
+    console.log(razorpay_order_id)
+    console.log(razorpay_payment_id)
 
     const cart = await cartModel.findOne({ _id: cartId, user: userId }).populate('items.product')
 
