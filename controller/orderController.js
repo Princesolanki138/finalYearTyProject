@@ -3,7 +3,7 @@ import Order from "../models/orderModel.js";
 
 export const createOrder = async (req, res) => {
   try {
-    const { cartId, orderId, paymentId } = req.body
+    const { cartId, razorpay_order_id, razorpay_payment_id } = req.body
     const userId = req.user._id
     console.log(userId)
 
@@ -30,8 +30,8 @@ export const createOrder = async (req, res) => {
       user: userId,
       items: orderItems,
       totalAmount: totalAmount,
-      orderId: orderId,
-      paymentId: paymentId
+      razorpay_order_id: razorpay_order_id || null,
+      razorpay_payment_id: razorpay_payment_id || null
     });
 
     const savedOrder = await newOrder.save();
