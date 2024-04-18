@@ -6,6 +6,7 @@ import Address from "../models/addressModel.js"
 import Cart from "../models/cartModel.js"
 import Product from "../models/productModel.js"
 import Category from "../models/categoryModel.js"
+import Order from "../models/orderModel.js"
 
 
 //register controller
@@ -97,6 +98,9 @@ export const loginController = async (req, res) => {
 
     // // fetch all product in cart items
     const cart = await Cart.findOne({ user: user._id });
+    if (!cart) {
+      const newCart = await Cart.create({ user: user._id, items: [], totalCartItem: 0, totalCartValue: 0 });
+    }
     if (!cart || !cart.items || cart.items.length === 0) {
       res.status(200)
         .set('Content-Transfer-Encoding', 'application/gzip')
@@ -121,6 +125,7 @@ export const loginController = async (req, res) => {
               country: address.country || "India",
             } : null
           },
+          cartId: cart._id,
           cart: { items: [], totalCartItem: 0, totalCartValue: 0 },
           token
         })
@@ -139,7 +144,7 @@ export const loginController = async (req, res) => {
 
       cart.totalCartValue = cart.items.reduce((total, item) => total + item.quantity * item.product.price, 0);
 
-      // console.log(token)
+
 
       res.status(200)
         .set('Content-Transfer-Encoding', 'application/gzip')
@@ -391,7 +396,6 @@ export const addToCartController = async (req, res) => {
     const userId = req.user._id;
 
     let cart = await Cart.findOne({ user: userId });
-    let product = await Product.findById(productId);
 
 
     if (!cart) {

@@ -33,6 +33,10 @@ const orderSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   },
+  userAddress: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'address',
+  },
   status: {
     type: String,
     enum: ['Pending', 'Processing', 'Shipped', 'Delivered'],
