@@ -47,17 +47,15 @@ export const createOrder = async (req, res) => {
     const user = await User.findById(req.user._id);
     const addressId = user.address[0]; // Assuming address ID is at index 0
     const address = await Address.findById(addressId);
-    const userAddress = addressId
 
-
-    const UserAddressInString = `${address.Area || " "}, ${address.landmark || " "}, ${address.street || " "}, ${address.city || " "}, ${address.state || " "}, ${address.pincode || " "}, ${address.country || " "}`
+    const UserAddress = `${address.Area || " "}, ${address.landmark || " "}, ${address.street || " "}, ${address.city || " "}, ${address.state || " "}, ${address.pincode || " "}, ${address.country || " "}`
     const newOrder = new Order({
       user: userId,
       items: orderItems,
       totalAmount: totalAmount,
       razorpay_order_id: razorpay_order_id || null,
       razorpay_payment_id: razorpay_payment_id || null,
-      userAddress: userAddress
+      userAddress: UserAddress
     });
 
     const savedOrder = await newOrder.save();
@@ -70,7 +68,7 @@ export const createOrder = async (req, res) => {
     await cart.save();
 
 
-    res.status(201).send({ success: true, message: 'Order created successfully', order: savedOrder, userAddress: UserAddressInString, updatedCart: { _id: cart._id, items: cart.items, totalCartItem: cart.totalCartItem, totalCartValue: cart.totalCartValue, } });
+    res.status(201).send({ success: true, message: 'Order created successfully', order: savedOrder, updatedCart: { _id: cart._id, items: cart.items, totalCartItem: cart.totalCartItem, totalCartValue: cart.totalCartValue, } });
 
   } catch (error) {
     console.error('Error creating order:', error);
@@ -86,15 +84,15 @@ export const getOrderOfUser = async (req, res) => {
     if (!orders || orders.length === 0) {
       return res.status(404).json({ success: false, message: 'Orders not found for this user' });
     }
-    const user = await User.findById(req.user._id);
-    const addressId = user.address[0]; // Assuming address ID is at index 0
-    const address = await Address.findById(addressId);
+    // const user = await User.findById(req.user._id);
+    // const addressId = user.address[0]; // Assuming address ID is at index 0
+    // const address = await Address.findById(addressId);
 
 
-    const UserAddressInString = `${address.Area || " "}, ${address.landmark || " "}, ${address.street || " "}, ${address.city || " "}, ${address.state || " "}, ${address.pincode || " "}, ${address.country || " "}`
+    // const UserAddressInString = `${address.Area || " "}, ${address.landmark || " "}, ${address.street || " "}, ${address.city || " "}, ${address.state || " "}, ${address.pincode || " "}, ${address.country || " "}`
 
 
-    res.status(200).json({ success: true, message: 'Orders fetched successfully', orders, userAddress: UserAddressInString });
+    res.status(200).json({ success: true, message: 'Orders fetched successfully', orders, });
 
   } catch (error) {
     console.error('Error fetching orders:', error);
