@@ -2,6 +2,12 @@ import Address from "../models/addressModel.js";
 import cartModel from "../models/cartModel.js";
 import Order from "../models/orderModel.js";
 import User from "../models/userModel.js";
+import Razorpay from "razorpay";
+import crypto from "crypto";
+const rozarpayinstance = new Razorpay({
+  key_id: "rzp_test_raNMlh9GYX3QXF",
+  key_secret: "to9Jss98ZLXonh8uhQ2GHUUB",
+});
 
 export const createOrder = async (req, res) => {
   try {
@@ -100,7 +106,10 @@ export const getOrderOfUser = async (req, res) => {
 export const getAllOrders = async (req, res) => {
   try {
     const orders = await Order.find().populate('items.product');
-    res.status(200).json({ success: true, orders });
+    // total profit of all orders
+    const totalProfit = orders.reduce((acc, order) => acc + order.totalAmount, 0);
+
+    res.status(200).json({ success: true, orders, totalProfit });
 
   } catch (error) {
     console.error('Error fetching orders:', error);
@@ -108,3 +117,56 @@ export const getAllOrders = async (req, res) => {
 
   }
 }
+
+export const rozarpayCreateOrder = async (req, res) => {
+  try {
+    const { cartId, option } = req.body;
+    console.log(cartId);
+
+    //check cart is available or not in db
+    const userCart = await Cart.findById(cartId);
+    if (!userCart) {
+      res.status(404).send({
+        success: false,
+        message: "Cart not found",
+      });
+    }
+    // const amount = userCart.totalCartValue;
+
+    console.log("opt work");
+    const order = await rozarpayinstance.orders.create(option);
+    console.log("orderss", order);
+    res.status(200).send({
+      success: true,
+      order,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send(error);
+  }
+};
+
+export const orderpaymentVerify = async (req, res) => {
+  const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
+    req.body;
+  console.log(razorpay_order_id, razorpay_payment_id, razorpay_signature);
+  const sha = crypto.createHmac("sha256", process.env.RAZORPAY_SECRET_KEY);
+  console.log("key", process.env.RAZORPAY_SECRET_KEY);
+  sha.update(`${razorpay_order_id}|${razorpay_payment_id}`);
+  const digest = sha.digest("hex");
+  console.log(digest, razorpay_signature);
+
+  if (digest !== razorpay_signature) {
+    res.status(400).json({
+      success: false,
+      message: "something went wrong",
+    });
+  } else {
+    res.status(200).json({
+      success: true,
+      orderId: razorpay_order_id,
+      paymentId: razorpay_payment_id,
+      message: "payment sucessfull",
+    });
+  }
+};

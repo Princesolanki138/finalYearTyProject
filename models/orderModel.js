@@ -34,8 +34,8 @@ const orderSchema = new mongoose.Schema({
     default: Date.now
   },
   userAddress: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'address',
+    type: String
+
   },
   status: {
     type: String,

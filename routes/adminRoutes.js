@@ -2,6 +2,7 @@ import express from "express"
 import { requireSignIn, isAdmin } from "../middleware/authMiddleware.js"
 import { deleteUserController, getAllUserController, totalCountAllController } from "../controller/authController.js"
 import { adminLoginController, admintRegisterController } from "../controller/adminController.js"
+import { getAllOrders } from "../controller/orderController.js"
 
 const router = express.Router()
 
@@ -24,6 +25,8 @@ router.get("/admin-auth", requireSignIn, isAdmin, (req, res) => {
     user: req.user
   })
 })
+
+router.get("/getAllOrders", requireSignIn, isAdmin, getAllOrders)
 
 
 export default router;

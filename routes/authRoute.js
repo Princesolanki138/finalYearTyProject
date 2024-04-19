@@ -7,7 +7,7 @@ import {
   from "../controller/authController.js";
 import requireSignIn from "../middleware/authMiddleware.js"
 import { searchProductController } from "../controller/productController.js";
-import { createOrder, getOrderOfUser } from "../controller/orderController.js";
+import { createOrder, getOrderOfUser, orderpaymentVerify, rozarpayCreateOrder } from "../controller/orderController.js";
 
 
 const router = express.Router();
@@ -56,7 +56,9 @@ router.get("/search", requireSignIn, searchProductController);
 
 router.post("/create-order", requireSignIn, createOrder);
 
-
 router.get("/get-order/:_id", requireSignIn, getOrderOfUser);
+
+router.post("/create-order", rozarpayCreateOrder);
+router.post("/verify-order", orderpaymentVerify);
 
 export default router;

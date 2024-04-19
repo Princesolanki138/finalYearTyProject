@@ -714,12 +714,14 @@ export const totalCountAllController = async (req, res) => {
     const totalUser = await User.countDocuments();
     const totalProduct = await Product.countDocuments();
     const totalCategory = await Category.countDocuments();
+    const totalOrder = await Order.countDocuments();
     res.status(200).send({
       success: true,
       message: 'Total count fetched successfully',
       customer: totalUser,
       total_Product: totalProduct,
-      total_category: totalCategory
+      total_category: totalCategory,
+      total_order: totalOrder
     })
 
   } catch (error) {
