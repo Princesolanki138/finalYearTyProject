@@ -58,7 +58,7 @@ router.post("/create-order", requireSignIn, createOrder);
 
 router.get("/get-order/:_id", requireSignIn, getOrderOfUser);
 
-router.post("/create-order", rozarpayCreateOrder);
+router.post("/create-rozarpay-order", rozarpayCreateOrder);
 router.post("/verify-order", orderpaymentVerify);
 
 export default router;
