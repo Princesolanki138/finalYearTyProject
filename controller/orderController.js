@@ -122,7 +122,7 @@ export const rozarpayCreateOrder = async (req, res) => {
     console.log(cartId);
 
     //check cart is available or not in db
-    const userCart = await Cart.findById(cartId);
+    const userCart = await cartModel.findById(cartId);
     if (!userCart) {
       res.status(404).send({
         success: false,
