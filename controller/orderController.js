@@ -48,7 +48,12 @@ export const createOrder = async (req, res) => {
     const addressId = user.address[0]; // Assuming address ID is at index 0
     const address = await Address.findById(addressId);
 
-    const UserAddress = `${address.Area || " "}, ${address.landmark || " "}, ${address.street || " "}, ${address.city || " "}, ${address.state || " "}, ${address.pincode || " "}, ${address.country || " "}`
+    const UserAddress = `${address?.Area || ' '}, ${address?.landmark || ' '}, ${address?.street || ' '}, ${address.city}, ${address?.state || ' '}, ${address?.pincode || ' '}, ${address?.country || ' '}`;
+
+    if (!UserAddress) {
+      return res.status(404).send({ success: false, message: 'Address not found' });
+    }
+
     const newOrder = new Order({
       user: userId,
       items: orderItems,
@@ -80,6 +85,7 @@ export const getOrderOfUser = async (req, res) => {
   try {
     const { user } = req.params._id
     const orders = await Order.find({ userId: user }).populate('items.product');
+    console.log(orders)
 
     if (!orders || orders.length === 0) {
       return res.status(404).json({ success: false, message: 'Orders not found for this user' });
@@ -92,7 +98,7 @@ export const getOrderOfUser = async (req, res) => {
     // const UserAddressInString = `${address.Area || " "}, ${address.landmark || " "}, ${address.street || " "}, ${address.city || " "}, ${address.state || " "}, ${address.pincode || " "}, ${address.country || " "}`
 
 
-    res.status(200).json({ success: true, message: 'Orders fetched successfully', orders, });
+    res.status(200).json({ success: true, message: 'Orders fetched successfully', orders });
 
   } catch (error) {
     console.error('Error fetching orders:', error);
@@ -157,7 +163,7 @@ export const orderpaymentVerify = async (req, res) => {
   if (digest !== razorpay_signature) {
     res.status(400).json({
       success: false,
-      message: "something went wrong",
+      message: "Razorpay signature verification failed",
     });
   } else {
     res.status(200).json({
