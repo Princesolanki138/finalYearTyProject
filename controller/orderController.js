@@ -166,11 +166,19 @@ export const orderpaymentVerify = async (req, res) => {
       message: "Razorpay signature verification failed",
     });
   } else {
+    const paymentdone = await Order.findByIdAndUpdate(
+      req.user._id,
+      {
+        paymentDone: true,
+      }
+    )
     res.status(200).json({
       success: true,
       orderId: razorpay_order_id,
       paymentId: razorpay_payment_id,
+      paymentdone: paymentdone,
       message: "payment sucessfull",
     });
   }
 };
+
