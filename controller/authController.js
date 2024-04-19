@@ -458,7 +458,7 @@ export const addToCartController = async (req, res) => {
     }))
 
 
-    res.status(200).json({ success: true, message: 'Product added to cart successfully', cart: { _id: cart._id, items: cartItems }, totalCartItem: cart.totalCartItem, totalCartValue: cart.totalCartValue });
+    res.status(200).json({ success: true, message: 'Product added to cart successfully', cart: { cartId: cart._id, items: cartItems }, totalCartItem: cart.totalCartItem, totalCartValue: cart.totalCartValue });
   } catch (error) {
     console.error('Error adding product to cart:', error);
     res.status(500).json({ success: false, error, message: 'Error adding product to cart' });
