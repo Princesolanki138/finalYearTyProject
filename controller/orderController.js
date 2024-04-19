@@ -78,8 +78,8 @@ export const createOrder = async (req, res) => {
 
 export const getOrderOfUser = async (req, res) => {
   try {
-    const { orderId } = req.params._id
-    const orders = await Order.find({ orderId: Order._id }).populate('items.product');
+    const { user } = req.params._id
+    const orders = await Order.find({ userId: user }).populate('items.product');
 
     if (!orders || orders.length === 0) {
       return res.status(404).json({ success: false, message: 'Orders not found for this user' });
