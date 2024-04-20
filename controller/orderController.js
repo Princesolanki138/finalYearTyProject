@@ -166,12 +166,18 @@ export const orderpaymentVerify = async (req, res) => {
       message: "Razorpay signature verification failed",
     });
   } else {
-    const paymentdone = await Order.findByIdAndUpdate(
-      req.user._id,
-      {
-        paymentDone: true,
-      }
-    )
+    const order = await Order.findOne({ razorpayOrderId: razorpay_order_id });
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: 'Order not found for Razorpay order ID',
+      });
+    }
+
+    // Update paymentDone field to true
+    order.paymentDone = true;
+    await order.save();
     res.status(200).json({
       success: true,
       orderId: razorpay_order_id,
