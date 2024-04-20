@@ -3,27 +3,27 @@ import mongoose from "mongoose";
 const productSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true,
+    // required: true,
   },
   slug: {
     type: String,
-    required: true,
+    // required: true,
   },
   brand: {
     type: String,
-    required: true,
+    // required: true,
   },
   mrp: {
     type: Number,
-    required: true,
+    // required: true,
   },
   price: {
     type: Number,
-    required: true,
+    // required: true,
   },
   modelno: {
     type: String,
-    required: true,
+    // required: true,
   },
   images: {
     type: [String], // cloudinary url
@@ -31,34 +31,34 @@ const productSchema = new mongoose.Schema({
   category: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'category',
-    required: true,
+    // required: true,
   },
   gender: {
     type: String,
-    required: true,
+    // required: true,
   },
   warranty: {
     type: Number,
-    required: true,
+    // required: true,
   },
   country_of_origin: {
     type: String,
-    required: true,
+    // required: true,
   },
   description: {
     type: String,
-    required: true,
+    // required: true,
   },
   dialcolor: {
     type: [String], // Changed to array of strings to store multiple dial colors
-    required: true,
+    // required: true,
   },
   strapColor: {
     type: [String], // Changed to array of strings to store multiple strap colors
-    required: true,
+    // required: true,
   },
 }, { timestamps: true });
 
-const Product = mongoose.model("Product", productSchema); // Changed model name to singular and capitalized
+const Product = mongoose.model("Product", productSchema);
 
 export default Product;
