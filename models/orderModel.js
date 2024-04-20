@@ -39,7 +39,6 @@ const orderSchema = new mongoose.Schema({
   },
   paymentDone: {
     type: Boolean,
-    default: false
   }
 });
 
