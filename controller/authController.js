@@ -444,7 +444,6 @@ export const addToCartController = async (req, res) => {
     // Update the cart's totalCartValue property
     cart.totalCartValue = totalCartValue;
 
-
     // Save the updated cart
     await cart.save();
 
@@ -458,7 +457,7 @@ export const addToCartController = async (req, res) => {
     }))
 
 
-    res.status(200).json({ success: true, message: 'Product added to cart successfully', cart: { cartId: cart._id, items: cartItems }, totalCartItem: cart.totalCartItem, totalCartValue: cart.totalCartValue });
+    res.status(200).json({ success: true, message: 'Product added to cart successfully', cart: { items: cartItems }, totalCartItem: cart.totalCartItem, totalCartValue: cart.totalCartValue, cartId: cart._id });
   } catch (error) {
     console.error('Error adding product to cart:', error);
     res.status(500).json({ success: false, error, message: 'Error adding product to cart' });
