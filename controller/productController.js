@@ -313,9 +313,9 @@ export const searchProductController = async (req, res) => {
     })
 
     if (products.length < 1) {
-      return res.status(404).json({
-        success: true,
-        product: []
+      return res.status(200).json({
+        success: false,
+        products: []
       })
     }
 
