@@ -4,7 +4,6 @@ import Order from "../models/orderModel.js";
 import User from "../models/userModel.js";
 import Razorpay from "razorpay";
 import crypto from "crypto";
-import mongoose from "mongoose";
 const rozarpayinstance = new Razorpay({
   key_id: "rzp_test_raNMlh9GYX3QXF",
   key_secret: "to9Jss98ZLXonh8uhQ2GHUUB",
@@ -89,7 +88,7 @@ export const getOrderOfUser = async (req, res) => {
     const userId = id
     console.log(userId)
 
-    const orders = await Order.find({ user: userId }).populate('user', 'name email').populate('items.product');
+    const orders = await Order.find({ user: userId }).populate(-'user').populate('items.product');
     // console.log(orders)
 
 
