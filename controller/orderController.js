@@ -171,7 +171,6 @@ export const orderpaymentVerify = async (req, res) => {
       success: true,
       orderId: razorpay_order_id,
       paymentId: razorpay_payment_id,
-      paymentdone: paymentdone,
       message: "payment sucessfull",
     });
   }
