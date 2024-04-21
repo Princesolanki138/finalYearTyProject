@@ -61,6 +61,7 @@ export const createOrder = async (req, res) => {
       razorpay_order_id: razorpay_order_id || null,
       razorpay_payment_id: razorpay_payment_id || null,
       userAddress: UserAddress,
+      orderStatus: 'Pending',
       paymentDone: true
     });
 
