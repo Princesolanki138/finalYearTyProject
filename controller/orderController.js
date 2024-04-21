@@ -4,6 +4,7 @@ import Order from "../models/orderModel.js";
 import User from "../models/userModel.js";
 import Razorpay from "razorpay";
 import crypto from "crypto";
+import mongoose from "mongoose";
 const rozarpayinstance = new Razorpay({
   key_id: "rzp_test_raNMlh9GYX3QXF",
   key_secret: "to9Jss98ZLXonh8uhQ2GHUUB",
@@ -61,7 +62,6 @@ export const createOrder = async (req, res) => {
       razorpay_order_id: razorpay_order_id || null,
       razorpay_payment_id: razorpay_payment_id || null,
       userAddress: UserAddress,
-      orderStatus: 'Pending',
       paymentDone: true
     });
 
@@ -85,20 +85,17 @@ export const createOrder = async (req, res) => {
 
 export const getOrderOfUser = async (req, res) => {
   try {
-    const { user } = req.params._id
-    const orders = await Order.find({ userId: user }).populate('items.product');
-    console.log(orders)
+    const { id } = req.params
+    const userId = id
+    console.log(userId)
+
+    const orders = await Order.find({ user: userId }).populate('user', 'name email').populate('items.product');
+    // console.log(orders)
+
 
     if (!orders || orders.length === 0) {
       return res.status(404).json({ success: false, message: 'Orders not found for this user' });
     }
-    // const user = await User.findById(req.user._id);
-    // const addressId = user.address[0]; // Assuming address ID is at index 0
-    // const address = await Address.findById(addressId);
-
-
-    // const UserAddressInString = `${address.Area || " "}, ${address.landmark || " "}, ${address.street || " "}, ${address.city || " "}, ${address.state || " "}, ${address.pincode || " "}, ${address.country || " "}`
-
 
     res.status(200).json({ success: true, message: 'Orders fetched successfully', orders });
 

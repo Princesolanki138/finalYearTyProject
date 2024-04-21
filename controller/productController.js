@@ -268,21 +268,9 @@ export const productFilterController = async (req, res) => {
     const filter = {}
     if (req.query.category) {
       filter.category = req.query.category
-
-    }
-    if (req.query.brand) {
-      filter.brand = req.query.brand
-    }
-    if (req.query.strapcolor) {
-      filter.strapColor = req.query.strapcolor;
-    }
-    if (req.query.dialcolor) {
-      filter.dialcolor = req.query.dialcolor;
-    }
-    if (req.query.priceRange) {
-      filter.price = { $gte: priceRange[0], $lte: priceRange[1] };
     }
     const products = await productModel.find(filter).populate("category");
+
 
     res.status(200).send({
       success: true,

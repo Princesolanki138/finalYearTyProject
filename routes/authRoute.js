@@ -50,13 +50,13 @@ router.post('/remove-from-cart', requireSignIn, removeCartProductController);
 
 router.get("/all-items", requireSignIn, getCartController);
 
-router.get("/search", requireSignIn, searchProductController);
+router.get("/search", searchProductController);
 
 // order routes
 
 router.post("/create-order", requireSignIn, createOrder);
 
-router.get("/get-order/:_id", requireSignIn, getOrderOfUser);
+router.get("/get-order/:id", requireSignIn, getOrderOfUser);
 
 router.post("/create-rozarpay-order", rozarpayCreateOrder);
 router.post("/verify-order", orderpaymentVerify);
