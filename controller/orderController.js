@@ -86,7 +86,8 @@ export const createOrder = async (req, res) => {
 export const getOrderOfUser = async (req, res) => {
   try {
     const { id } = req.params
-    const userId = new mongoose.Types.ObjectId(id)
+   // const userId = new mongoose.Types.ObjectId(id)
+    const userId = id
     console.log(userId)
 
     const orders = await Order.find({ user: userId }).populate(-'user').populate('items.product');
