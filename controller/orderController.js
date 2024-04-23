@@ -14,10 +14,10 @@ export const createOrder = async (req, res) => {
   try {
     const { cartId, razorpay_order_id, razorpay_payment_id } = req.body
     const userId = req.user._id
-    console.log(userId)
-    console.log(cartId)
-    console.log(razorpay_order_id)
-    console.log(razorpay_payment_id)
+    // console.log(userId)
+    // console.log(cartId)
+    // console.log(razorpay_order_id)
+    // console.log(razorpay_payment_id)
 
     const cart = await cartModel.findOne({ _id: cartId, user: userId }).populate('items.product')
     console.log(cart)
@@ -86,8 +86,8 @@ export const createOrder = async (req, res) => {
 export const getOrderOfUser = async (req, res) => {
   try {
     const { id } = req.params
-   // const userId = new mongoose.Types.ObjectId(id)
-    const userId = id
+    const userId = new mongoose.Types.ObjectId(id)
+    // const userId = id
     console.log(userId)
 
     const orders = await Order.find({ user: userId }).populate(-'user').populate('items.product');
@@ -153,12 +153,12 @@ export const rozarpayCreateOrder = async (req, res) => {
 export const orderpaymentVerify = async (req, res) => {
   const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
     req.body;
-  console.log(razorpay_order_id, razorpay_payment_id, razorpay_signature);
+  // console.log(razorpay_order_id, razorpay_payment_id, razorpay_signature);
   const sha = crypto.createHmac("sha256", process.env.RAZORPAY_SECRET_KEY);
-  console.log("key", process.env.RAZORPAY_SECRET_KEY);
+  // console.log("key", process.env.RAZORPAY_SECRET_KEY);
   sha.update(`${razorpay_order_id}|${razorpay_payment_id}`);
   const digest = sha.digest("hex");
-  console.log(digest, razorpay_signature);
+  // console.log(digest, razorpay_signature);
 
   if (digest !== razorpay_signature) {
     res.status(400).json({
