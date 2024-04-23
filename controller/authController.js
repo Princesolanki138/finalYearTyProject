@@ -688,23 +688,40 @@ export const getAllUserController = async (req, res) => {
 // delete user 
 export const deleteUserController = async (req, res) => {
   try {
-    const userId = req.params.userId;
+    const userId = req.params
+
+    // Check if the userId is valid before attempting deletion
+    if (!userId) {
+      return res.status(400).json({
+        success: false,
+        message: 'User ID is required for deletion',
+      });
+    }
+
     const user = await User.findByIdAndDelete(userId);
-    res.status(200).send({
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found',
+      });
+    }
+
+    res.status(200).json({
       success: true,
       message: 'User deleted successfully',
-      user,
-    })
+      deletedUser: user,
+    });
 
   } catch (error) {
-    console.error(error);
-    res.status(500).send({
+    console.error('Error in deleting user:', error);
+    res.status(500).json({
       success: false,
-      error,
+      error: error.message,
       message: 'Error in deleting user',
-    })
+    });
   }
-}
+};
 
 
 // total count of user , product , category
@@ -717,10 +734,12 @@ export const totalCountAllController = async (req, res) => {
     res.status(200).send({
       success: true,
       message: 'Total count fetched successfully',
-      customer: totalUser,
-      total_Product: totalProduct,
-      total_category: totalCategory,
-      total_order: totalOrder
+      total: {
+        customer: totalUser,
+        total_Product: totalProduct,
+        total_category: totalCategory,
+        total_order: totalOrder
+      }
     })
 
   } catch (error) {

@@ -98,7 +98,7 @@ export const createProductController = async (req, res) => {
 export const getProductController = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
-    const perPage = parseInt(req.query.perPage) || 10;
+    const perPage = parseInt(req.query.perPage) || 30;
 
     const products = await productModel
       .find({})

@@ -16,7 +16,7 @@ router.get("/all-users", requireSignIn, isAdmin, getAllUserController)
 router.get("/all-total-count", requireSignIn, isAdmin, totalCountAllController)
 
 
-router.delete("/delete-user/:userId", requireSignIn, isAdmin, deleteUserController)
+router.delete("/delete-user/:_id", requireSignIn, isAdmin, deleteUserController)
 
 router.get("/admin-auth", requireSignIn, isAdmin, (req, res) => {
   res.status(200).send({
