@@ -93,6 +93,7 @@ export const updateOrderStatus = async (req, res) => {
   try {
     const { orderId, orderStatus
     } = req.body;
+    console.log(orderId, orderStatus)
     const updatedOrder = await Order.findByIdAndUpdate(orderId, {
       orderStatus
     }, { new: true });
