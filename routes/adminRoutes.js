@@ -30,7 +30,7 @@ router.get("/getAllOrders", requireSignIn, isAdmin, getAllOrders)
 
 router.put("/update-order-status", requireSignIn, isAdmin, updateOrderStatus)
 
-router.get("/search-user-order/:_id", requireSignIn, isAdmin, searchUserOrder)
+router.get("/search-user-order/:id", requireSignIn, isAdmin, searchUserOrder)
 
 
 export default router;

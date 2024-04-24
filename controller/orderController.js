@@ -182,13 +182,15 @@ export const orderpaymentVerify = async (req, res) => {
 
 export const searchUserOrder = async (req, res) => {
   try {
-    const { orderId } = req.params
-    const order = await Order.findById(orderId).populate('items.product');
+    const { id } = req.params;
+    const order = await Order.findById(id).populate('items.product');
 
+    if (!order) {
+      return res.status(404).send({ success: false, message: 'Order not found' });
+    }
     return res.status(200).send({ success: true, message: 'Orders fetched successfully', order });
-
   }
-  catch {
+  catch (error) {
     console.log(error);
     return res.status(500).send({ success: false, message: 'Error fetching orders' });
   }
