@@ -1,4 +1,5 @@
 import Admin from "../models/AdminModel.js";
+import Order from "../models/orderModel.js";
 import User from "../models/userModel.js";
 import JWT from "jsonwebtoken"
 
@@ -84,4 +85,29 @@ export const adminLoginController = async (req, res) => {
 
   }
 
+}
+
+// updating order status 
+
+export const updateOrderStatus = async (req, res) => {
+  try {
+    const { orderId, orderStatus
+    } = req.body;
+    const updatedOrder = await Order.findByIdAndUpdate(orderId, {
+      orderStatus
+    }, { new: true });
+    res.status(200).send({
+      success: true,
+      message: 'Order status updated successfully',
+      order: updatedOrder
+    })
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: 'Error while updating order status',
+      error
+    })
+  }
 }
