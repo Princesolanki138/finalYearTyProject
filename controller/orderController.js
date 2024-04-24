@@ -112,8 +112,10 @@ export const getAllOrders = async (req, res) => {
     const orders = await Order.find().populate('items.product');
     // total profit of all orders
     const totalProfit = orders.reduce((acc, order) => acc + order.totalAmount, 0);
+    // total orders 
+    const totalOrders = orders.length;
 
-    res.status(200).json({ success: true, orders, totalProfit });
+    res.status(200).json({ success: true, orders, totalOrders, totalProfit });
 
   } catch (error) {
     console.error('Error fetching orders:', error);
@@ -175,3 +177,19 @@ export const orderpaymentVerify = async (req, res) => {
   }
 };
 
+
+// serch User Order By Id or Name 
+
+export const searchUserOrder = async (req, res) => {
+  try {
+    const { orderId } = req.params
+    const order = await Order.findById(orderId).populate('items.product');
+
+    return res.status(200).send({ success: true, message: 'Orders fetched successfully', order });
+
+  }
+  catch {
+    console.log(error);
+    return res.status(500).send({ success: false, message: 'Error fetching orders' });
+  }
+}
